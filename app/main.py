@@ -10,6 +10,8 @@
 #  - docker compose up
 #  - docker compose -f docker-compose.dev.yaml up
 
+import copy
+import json
 import logging
 import multiprocessing as mp
 import os
@@ -24,7 +26,7 @@ import numpy as np
 import psutil
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastrtc import AdditionalOutputs, Stream
 from pydantic import BaseModel, Field
 
@@ -84,7 +86,6 @@ def rtc_stream_routine() -> Iterator[tuple[np.ndarray, AdditionalOutputs]]:
     """Iterator to send frames with predictions to the WebRTC visualization stream"""
     while not mp_stop_event.is_set():
         yield rtc_stream_queue.get()
-    logger.info("Stopped RTC stream routine")
 
 
 stream = Stream(
@@ -106,6 +107,7 @@ app = FastAPI(
     # TODO add contact info
     # TODO add license
 )
+
 app.add_middleware(  # TODO restrict settings in production
     CORSMiddleware,
     allow_origins=["*"],
@@ -142,6 +144,25 @@ class InputData(BaseModel):
 async def webrtc_input_hook(data: InputData) -> None:
     """Update webrtc input for user"""
     stream.set_input(data.webrtc_id, data.conf_threshold)
+
+
+@app.get("/api/inference", tags=["webrtc"])
+async def stream_updates(webrtc_id: str) -> StreamingResponse:
+    """Get event stream of inference results"""
+
+    async def output_stream():
+        async for output in stream.output_stream(webrtc_id):
+            # Output is the AdditionalOutputs instance
+            # Be sure to serialize it however you would like
+            yield f"data: {output.args[0]}\n\n"
+
+    return StreamingResponse(output_stream(), media_type="text/event-stream")
+
+
+@app.get("/api/predictions/latest", tags=["webrtc"])
+async def latest_updates(webrtc_id: str):  # noqa: ANN201
+    """Get latest inference result"""
+    return stream.fetch_latest_output(webrtc_id)
 
 
 stream.mount(app, "/api")

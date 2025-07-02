@@ -1,3 +1,4 @@
+import json
 import copy
 import logging
 import multiprocessing as mp
@@ -61,8 +62,11 @@ def dispatching_routine(
                 predictions=prediction,
             )
 
+        annotations = DetectionResultToJson.to_json_structure(inf_result)
+
         # Dispatch to WebRTC stream
-        additional_outputs = AdditionalOutputs(str(prediction))
+        additional_outputs = AdditionalOutputs(json.dumps({"annotations": annotations}))
+
         try:
             rtc_stream_queue.put((image_with_visualization, additional_outputs), block=False)
         except queue.Full:
