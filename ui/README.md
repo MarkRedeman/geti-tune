@@ -37,5 +37,5 @@ Please follow the [Tauri documentation](https://v2.tauri.app/start/prerequisites
 Start the Tauri dev server:
 
 ```bash
-npm tauri dev
+npm run tauri dev
 ```
