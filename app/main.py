@@ -28,7 +28,7 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from fastrtc import AdditionalOutputs, Stream
 from pydantic import BaseModel, Field
 
-from app.api.endpoints import configuration, models, pipelines, sinks, sources, system
+from app.api.endpoints import configuration, media_items, models, pipelines, sinks, sources, system
 from app.utils.ipc import (
     frame_queue,
     mp_config_changed_condition,
@@ -120,6 +120,7 @@ app.include_router(pipelines.router)
 app.include_router(models.router)
 app.include_router(configuration.router)
 app.include_router(system.router)
+app.include_router(media_items.router)
 
 cur_dir = Path(__file__).parent
 
