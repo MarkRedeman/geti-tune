@@ -6,13 +6,19 @@ import { MemoryRouterProps, RouterProvider } from 'react-router';
 import { MemoryRouter as Router } from 'react-router-dom';
 
 import { WebRTCConnectionProvider } from './components/stream/web-rtc-connection-provider';
+import { ZoomProvider } from './components/zoom/zoom';
 import { router } from './router';
+import { SelectedDataProvider } from './routes/data-collection/provider';
 
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             gcTime: 30 * 60 * 1000,
             staleTime: 5 * 60 * 1000,
+            networkMode: 'always',
+        },
+        mutations: {
+            networkMode: 'always',
         },
     },
     mutationCache: new MutationCache({
@@ -27,7 +33,11 @@ export const Providers = () => {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider router={router}>
                 <WebRTCConnectionProvider>
-                    <RouterProvider router={router} />
+                    <SelectedDataProvider>
+                        <ZoomProvider>
+                            <RouterProvider router={router} />
+                        </ZoomProvider>
+                    </SelectedDataProvider>
                 </WebRTCConnectionProvider>
             </ThemeProvider>
         </QueryClientProvider>

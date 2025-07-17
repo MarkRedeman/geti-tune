@@ -7,7 +7,7 @@ import { path } from 'static-path';
 
 import { ZoomProvider } from './components/zoom/zoom';
 import { Layout } from './layout';
-import { DataCollection } from './routes/data-collection/data-collection.component';
+import { DataCollection } from './routes/data-collection/data-collection';
 import { SelectedDataProvider } from './routes/data-collection/provider';
 import { LiveFeed } from './routes/live-feed/live-feed';
 import { EditPipelineLayout } from './routes/pipeline/edit-pipeline-layout';
@@ -89,13 +89,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: paths.dataCollection.index.pattern,
-                element: (
-                    <ZoomProvider>
-                        <SelectedDataProvider>
-                            <DataCollection />
-                        </SelectedDataProvider>
-                    </ZoomProvider>
-                ),
+                element: <DataCollection />,
             },
         ],
     },
