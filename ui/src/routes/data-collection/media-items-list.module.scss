@@ -1,0 +1,128 @@
+.mainContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    container-type: inline-size;
+    container-name: gridList;
+}
+
+.container {
+    width: 100%;
+    max-height: 100%;
+    overflow-x: auto;
+    position: absolute;
+    scrollbar-gutter: stable;
+}
+
+.mediaItem {
+    position: relative;
+
+    box-sizing: border-box;
+
+    transition:
+        background-color 0.1s ease-in-out,
+        border 0.1s ease-in-out;
+
+    transition-delay: 0.15s, 0.15s;
+}
+
+.mediaItem.accepted {
+    //background-color: rgba(112, 133, 65, 0.2);
+
+    &:after {
+        position: absolute;
+        right: 1em;
+        bottom: 1em;
+        background-color: var(--spectrum-gray-50);
+        padding: 0.5em;
+        border-radius: 0.25em;
+        content: '✅';
+        font-size: 12px;
+        pointer-events: none;
+    }
+}
+
+.mediaItem.rejected {
+    //background-color: rgba(200, 19, 38, 0.2);
+
+    &:after {
+        position: absolute;
+        right: 1em;
+        bottom: 1em;
+        background-color: var(--spectrum-gray-50);
+        padding: 0.5em;
+        border-radius: 0.25em;
+        content: '❌';
+        font-size: 12px;
+        pointer-events: none;
+    }
+}
+
+.mediaItem img {
+    box-sizing: border-box;
+    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.mediaItem[data-selected] img {
+    background-color: var(--spectrum-gray-100);
+    outline: thin solid var(--energy-blue);
+}
+
+.mediaItem:hover img {
+    transition-delay: 0s, 0s;
+    cursor: pointer;
+    background-color: var(--spectrum-gray-100);
+    outline: thin solid var(--energy-blue-light);
+}
+
+.mediaItem.accepted:hover {
+    //background-color: rgba(112, 133, 65, 0.4);
+}
+
+.mediaItem.rejected:hover {
+    //background-color: rgba(200, 19, 38, 0.4);
+}
+
+.mediaItem.accepted[data-selected] {
+    //background-color: rgba(112, 133, 65, 0.4);
+}
+
+.mediaItem.rejected[data-selected] {
+    //background-color: rgba(200, 19, 38, 0.4);
+}
+
+.mediaItem label {
+    //display: none !important;
+    opacity: 0;
+}
+.mediaItem[data-selected] label {
+    //display: flex !important;
+    opacity: 1;
+}
+
+.mediaItem:hover label {
+    //display: flex !important;
+    opacity: 1;
+}
+
+.mediaItem:focus label {
+    //display: flex !important;
+    opacity: 1;
+}
+
+//
+
+.checkbox {
+    background-color: var(--spectrum-gray-50);
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    padding: 0.25em 0.75em;
+    border-radius: 0.25em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
