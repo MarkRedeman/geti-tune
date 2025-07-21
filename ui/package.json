@@ -15,6 +15,7 @@
         "cyclic-deps-check": "npx madge --circular src/**/*.ts*",
         "dev": "rsbuild dev",
         "server": "uv --directory ../ run fastapi run --port 7860",
+        "dev:desktop": "tauri dev",
         "format": "prettier --write .",
         "format:check": "prettier --check --cache \"./src/**/*.{js,ts,jsx,tsx,css,scss,sass}\"",
         "lint": "eslint \"src/**/*.ts*\" --max-warnings 0",
