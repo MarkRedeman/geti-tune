@@ -5,6 +5,9 @@ import numpy as np
 from model_api.models import AnomalyResult, ClassificationResult, DetectedKeypoints, ImageResultWithSoftPrediction
 from model_api.models.result import DetectionResult, InstanceSegmentationResult, Label, Result
 from model_api.visualizer import BoundingBox, Flatten, Polygon
+from model_api.models import (
+    RotatedSegmentationResult,
+)
 from model_api.visualizer.scene import (
     AnomalyScene,
     ClassificationScene,
@@ -104,6 +107,16 @@ class KeypointVisualizerCreator(VisualizerCreator):
         return np.array(rendered_keypoint_pil)
 
 
+class RotatedSegmentationVisualizerCreator(VisualizerCreator):
+    """Creator for keypoint visualizations."""
+
+    def create_visualization(self, original_image: np.ndarray, predictions: RotatedSegmentationResult) -> np.ndarray:
+        """Create a visualization of the keypoint predictions on the original image."""
+        image_pil = Image.fromarray(original_image)
+        # TODO
+        return np.array([])
+
+
 class VisualizationDispatcher(metaclass=Singleton):
     """Dispatcher for creating visualizations."""
 
@@ -115,6 +128,7 @@ class VisualizationDispatcher(metaclass=Singleton):
             AnomalyResult: AnomalyDetectionVisualizerCreator(),
             ImageResultWithSoftPrediction: SegmentationVisualizerCreator(),
             DetectedKeypoints: KeypointVisualizerCreator(),
+            RotatedSegmentationResult: RotatedSegmentationVisualizerCreator(),
         }
 
     def create_visualization(self, original_image: np.ndarray, predictions: Result) -> np.ndarray | None:

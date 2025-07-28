@@ -59,4 +59,5 @@ class FolderDispatcher(BaseDispatcher):
         if OutputFormat.IMAGE_WITH_PREDICTIONS in self.output_formats:
             self._write_image_to_file(image_with_visualization, image_viz_file)
         if OutputFormat.PREDICTIONS in self.output_formats:
+            # TODO: add annotations here
             self._write_predictions_to_file(str(predictions), pred_txt_file)

@@ -10,8 +10,6 @@
 #  - docker compose up
 #  - docker compose -f docker-compose.dev.yaml up
 
-import copy
-import json
 import logging
 import multiprocessing as mp
 import os

@@ -1,5 +1,5 @@
-import json
 import copy
+import json
 import logging
 import multiprocessing as mp
 import queue
@@ -8,6 +8,7 @@ from multiprocessing.synchronize import Event as EventClass
 
 from fastrtc import AdditionalOutputs
 
+from app.utils.annotations import ToAnnotation
 from app.entities.stream_data import StreamData
 from app.schemas.configuration import Sink
 from app.services import ConfigurationService, DispatchService
@@ -62,7 +63,7 @@ def dispatching_routine(
                 predictions=prediction,
             )
 
-        annotations = DetectionResultToJson.to_json_structure(inf_result)
+        annotations = ToAnnotation.to_annotations(prediction)
 
         # Dispatch to WebRTC stream
         additional_outputs = AdditionalOutputs(json.dumps({"annotations": annotations}))
