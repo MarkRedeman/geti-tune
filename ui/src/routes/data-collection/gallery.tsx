@@ -141,6 +141,28 @@ export const Gallery = ({
 
     const items = useFilteredItems();
     const { onAccept, onDecline, onDelete } = useHandlers();
+    const onNext = () => {
+        const currentIndex = items.findIndex((item) => item.image === selectedMediaItem?.image);
+
+        const nextMediaItem = items.find((_, idx) => {
+            return idx > currentIndex;
+        });
+
+        if (nextMediaItem) {
+            setSelectedMediaItem(nextMediaItem);
+        }
+    };
+    const onPrevious = () => {
+        const currentIndex = items.findIndex((item) => item.image === selectedMediaItem?.image);
+
+        const previousMediaItem = items.findLast((_, idx) => {
+            return idx < currentIndex;
+        });
+
+        if (previousMediaItem) {
+            setSelectedMediaItem(previousMediaItem);
+        }
+    };
 
     return (
         <View UNSAFE_className={classes.mainContainer}>
@@ -148,28 +170,8 @@ export const Gallery = ({
                 onAccept={onAccept}
                 onDecline={onDecline}
                 onDelete={onDelete}
-                onNext={() => {
-                    const currentIndex = items.findIndex((item) => item.image === selectedMediaItem?.image);
-
-                    const nextMediaItem = items.find((_, idx) => {
-                        return idx > currentIndex;
-                    });
-
-                    if (nextMediaItem) {
-                        setSelectedMediaItem(nextMediaItem);
-                    }
-                }}
-                onPrevious={() => {
-                    const currentIndex = items.findIndex((item) => item.image === selectedMediaItem?.image);
-
-                    const previousMediaItem = items.findLast((_, idx) => {
-                        return idx < currentIndex;
-                    });
-
-                    if (previousMediaItem) {
-                        setSelectedMediaItem(previousMediaItem);
-                    }
-                }}
+                onNext={onNext}
+                onPrevious={onPrevious}
             />
             <Virtualizer layout={GridLayout} layoutOptions={layoutOptions}>
                 <AriaComponentsListBox
@@ -196,7 +198,16 @@ export const Gallery = ({
 
             <DialogContainer onDismiss={() => setSelectedMediaItem(null)}>
                 {selectedMediaItem !== null && (
-                    <InspectDialog mediaItem={selectedMediaItem} close={() => setSelectedMediaItem(null)} />
+                    <InspectDialog
+                        mediaItem={selectedMediaItem}
+                        close={() => setSelectedMediaItem(null)}
+                        onSelectMedia={setSelectedMediaItem}
+                        onAccept={onAccept}
+                        onDecline={onDecline}
+                        onDelete={onDelete}
+                        onNext={onNext}
+                        onPrevious={onPrevious}
+                    />
                 )}
             </DialogContainer>
         </View>
