@@ -105,29 +105,39 @@ export const Stream = ({
 
     return (
         <ZoomTransform target={size}>
-            <div style={{ gridArea: 'innercanvas' }}>
-                {status === 'connected' && (
-                    // eslint-disable-next-line jsx-a11y/media-has-caption
-                    <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
+            <div
+                className="grid [grid-template-areas:'innercanvas'] w-full h-full items-center justify-items-center overflow-hidden"
+                style={{
+                    display: 'grid',
+                    gridTemplateAreas: 'innercanvas',
+                    width: '100%',
+                    height: '100%',
+                }}
+            >
+                <div style={{ gridArea: 'innercanvas' }}>
+                    {status === 'connected' && (
+                        // eslint-disable-next-line jsx-a11y/media-has-caption
+                        <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            width={size.width}
+                            height={size.height}
+                            controls={false}
+                            style={{
+                                background: 'var(--spectrum-global-color-gray-200)',
+                            }}
+                        />
+                    )}
+                </div>
+                <div style={{ gridArea: 'innercanvas' }}>
+                    <Annotations
+                        annotations={predictions}
                         width={size.width}
                         height={size.height}
-                        controls={false}
-                        style={{
-                            background: 'var(--spectrum-global-color-gray-200)',
-                        }}
+                        isFocussed={isFocussed}
                     />
-                )}
-            </div>
-            <div style={{ gridArea: 'innercanvas' }}>
-                <Annotations
-                    annotations={predictions}
-                    width={size.width}
-                    height={size.height}
-                    isFocussed={isFocussed}
-                />
+                </div>
             </div>
         </ZoomTransform>
     );

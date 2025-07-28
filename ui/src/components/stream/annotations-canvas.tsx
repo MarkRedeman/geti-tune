@@ -61,7 +61,7 @@ function MaskAnnotations({
 const DEFAULT_ANNOTATION_STYLES = {
     //fillOpacity: 'var(--annotation-fill-opacity, 0.1)',
     fill: 'var(--annotation-fill)',
-    fillOpacity: 0.0,
+    fillOpacity: 0.4,
     stroke: 'var(--annotation-stroke)',
     strokeLinecap: 'round',
     strokeWidth: 'calc(1px / var(--zoom-scale))',
