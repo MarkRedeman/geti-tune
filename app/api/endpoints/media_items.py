@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from pathlib import Path
@@ -22,6 +23,7 @@ class MediaItem(BaseModel):
     image: str
     prediction: str
     text_content: str
+    json_content: dict | None = None
     width: int
     height: int
     aspect_ratio: float
@@ -82,11 +84,36 @@ async def list_media_items(
     end_index = start_index + page_size
     paginated_items = media_items[start_index:end_index]
 
-    # Read the contents of the text files
+    # # Read the contents of the text files
+    # for item in paginated_items:
+    #     item["text_content"] = "test"
+    #     async with await anyio.open_file(item["text"]) as file:
+    #         item["text_content"] = await file.read()
+
+    # Read the contents of the JSON files and add as 'json_content' to each item
     for item in paginated_items:
+        prefix = item["image"]
+        json_path = os.path.join(MEDIA_FOLDER, f"{prefix}-pred.json")
+
+        item["json_content"] = None
+        if os.path.exists(json_path):
+            try:
+                async with await anyio.open_file(json_path) as file:
+                    content = await file.read()
+                    item["json_content"] = json.loads(content)
+            except Exception as e:
+                logger.warning(f"Could not read or parse {json_path}: {e}")
+                item["json_content"] = None
+
+        # For compatibility, you may want to keep the old text_content for now
         item["text_content"] = "test"
-        async with await anyio.open_file(item["text"]) as file:
-            item["text_content"] = await file.read()
+        if os.path.exists(item["text"]):
+            try:
+                async with await anyio.open_file(item["text"]) as file:
+                    item["text_content"] = await file.read()
+            except Exception as e:
+                logger.warning(f"Could not read {item['text']}: {e}")
+                item["text_content"] = None
 
     return PaginatedResponse(
         page=page,
