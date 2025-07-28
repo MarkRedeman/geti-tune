@@ -8,7 +8,7 @@ from multiprocessing.synchronize import Event as EventClass
 
 from fastrtc import AdditionalOutputs
 
-from app.utils.annotations import ToAnnotation
+from app.utils.annotations import ToAnnotation, Roi, serialize_annotation
 from app.entities.stream_data import StreamData
 from app.schemas.configuration import Sink
 from app.services import ConfigurationService, DispatchService
@@ -63,10 +63,16 @@ def dispatching_routine(
                 predictions=prediction,
             )
 
-        annotations = ToAnnotation.to_annotations(prediction)
+        image = stream_data.frame_data
+        annotations = ToAnnotation.to_annotations(
+            prediction,
+            Roi(x=0, y=0, width=image.shape[0], height=image.shape[1]),
+        )
 
         # Dispatch to WebRTC stream
-        additional_outputs = AdditionalOutputs(json.dumps({"annotations": annotations}))
+        additional_outputs = AdditionalOutputs(
+            json.dumps({"annotations": [serialize_annotation(annotation) for annotation in annotations]})
+        )
 
         try:
             rtc_stream_queue.put((image_with_visualization, additional_outputs), block=False)

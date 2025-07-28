@@ -2,6 +2,7 @@ import { Dispatch, RefObject, SetStateAction, useCallback, useEffect, useRef, us
 
 import { useWebRTCConnection } from '../../components/stream/web-rtc-connection-provider';
 import { ZoomTransform } from '../zoom/zoom-transform';
+import { Annotations } from './annotations-canvas';
 import { usePredictions } from './use-predictions';
 
 const useSetTargetSizeBasedOnVideo = (
@@ -95,11 +96,11 @@ export const Stream = ({
     const videoRef = useStreamToVideo();
 
     useSetTargetSizeBasedOnVideo(setSize, videoRef);
-    const { status, webrtcConnectionRef } = useWebRTCConnection();
+    const { status, webRTCConnectionRef } = useWebRTCConnection();
 
     const [isFocussed, setIsFocussed] = useState(false);
 
-    const webrtcId = webrtcConnectionRef.current?.getId();
+    const webrtcId = webRTCConnectionRef.current?.getId();
     const predictions = usePredictions(webrtcId ?? '', status === 'idle');
 
     return (
@@ -121,7 +122,12 @@ export const Stream = ({
                 )}
             </div>
             <div style={{ gridArea: 'innercanvas' }}>
-                <Annotations annotations={predictions} width={width} height={height} isFocussed={isFocussed} />
+                <Annotations
+                    annotations={predictions}
+                    width={size.width}
+                    height={size.height}
+                    isFocussed={isFocussed}
+                />
             </div>
         </ZoomTransform>
     );
