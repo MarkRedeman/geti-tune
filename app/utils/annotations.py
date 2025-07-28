@@ -183,15 +183,17 @@ class InstanceSegmentationAnnotationCreator(AnnotationCreator):
             if hierarchies is None:
                 continue
             for contour, hierarchy in zip(contours, hierarchies[0]):
-                if hierarchy[3] != -1 or len(contour) <= 2 or cv2.contourArea(contour) < 1.0:
+                if hierarchy[3] != -1:
+                    continue
+                if len(contour) <= 2 or cv2.contourArea(contour) < 1.0:
                     continue
 
                 points = [
                     Point(
-                        x=point[0] / width,
-                        y=point[1] / height,
+                        x=point[0][0],
+                        y=point[0][1],
                     )
-                    for point in cv2.boxPoints(cv2.minAreaRect(contour))
+                    for point in list(contour)
                 ]
 
                 shape = Polygon(
@@ -325,7 +327,7 @@ class SegmentationAnnotationCreator(AnnotationCreator):
             if len(approx_curve) <= 2:
                 continue
 
-            points = [Point(x=p[0][0] / (width - 1), y=p[0][1] / (height - 1)) for p in contour.shape]
+            points = [Point(x=width * p[0][0] / (width - 1), y=height * p[0][1] / (height - 1)) for p in contour.shape]
             label = label_map[contour.label]
 
             shape = Polygon(

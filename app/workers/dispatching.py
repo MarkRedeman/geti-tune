@@ -66,7 +66,7 @@ def dispatching_routine(
         image = stream_data.frame_data
         annotations = ToAnnotation.to_annotations(
             prediction,
-            Roi(x=0, y=0, width=image.shape[0], height=image.shape[1]),
+            Roi(x=0, y=0, width=image.shape[1], height=image.shape[0]),
         )
 
         # Dispatch to WebRTC stream

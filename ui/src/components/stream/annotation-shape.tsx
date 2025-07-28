@@ -16,9 +16,8 @@ function OrientedBoundingBox({ shape }: { shape: OrientedBoundingBoxType }) {
 }
 
 function Polygon({ shape }: { shape: PolygonType }) {
-    const ratio = 1920 / 1080;
     const getFormattedPoints = (points: Array<{ x: number; y: number }>): string =>
-        points.map(({ x, y }) => `${x * 1080},${y * ratio * 1080}`).join(' ');
+        points.map(({ x, y }) => `${x},${y}`).join(' ');
     const points = getFormattedPoints(shape.points);
 
     return <polygon points={points} />;

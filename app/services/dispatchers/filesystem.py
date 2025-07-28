@@ -65,7 +65,7 @@ class FolderDispatcher(BaseDispatcher):
         if OutputFormat.PREDICTIONS in self.output_formats:
             annotations = ToAnnotation.to_annotations(
                 predictions,
-                Roi(x=0, y=0, width=original_image.shape[0], height=original_image.shape[1]),
+                Roi(x=0, y=0, width=original_image.shape[1], height=original_image.shape[0]),
             )
 
             print(len(annotations), str(predictions))
