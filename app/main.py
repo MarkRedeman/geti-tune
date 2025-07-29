@@ -167,6 +167,20 @@ async def latest_updates(webrtc_id: str):  # noqa: ANN201
 stream.mount(app, "/api")
 
 if __name__ == "__main__":
+    # Run database migrations first
+    from alembic.config import Config
+    from alembic import command
+
+    print("Running database migrations...")
+    try:
+        alembic_cfg = Config("app/alembic.ini")
+        command.upgrade(alembic_cfg, "head")
+        print("Database migrations completed successfully.")
+    except Exception as e:
+        logger.error(f"Database migration failed: {e}")
+        raise
+
+    # Start the server
     if os.getenv("GRADIO_UI") is not None:
         stream.ui.launch(server_name="0.0.0.0", server_port=7860)  # noqa: S104
     else:
