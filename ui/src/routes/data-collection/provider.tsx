@@ -20,6 +20,9 @@ type SelectedDataState = null | {
 
     filters: Filters;
     setFilters: Dispatch<SetStateAction<Filters>>;
+
+    isFocussed: boolean;
+    setIsFocussed: Dispatch<SetStateAction<boolean>>;
 };
 
 export const SelectedDataContext = createContext<SelectedDataState>(null);
@@ -33,7 +36,18 @@ export const SelectedDataProvider = ({ children }: { children: ReactNode }) => {
         hideRejected: false,
     });
 
-    const value = { selectedKeys, setSelectedKeys, mediaState, setMediaState, filters, setFilters };
+    const [isFocussed, setIsFocussed] = useState(false);
+
+    const value = {
+        selectedKeys,
+        setSelectedKeys,
+        mediaState,
+        setMediaState,
+        filters,
+        setFilters,
+        isFocussed,
+        setIsFocussed,
+    };
 
     return <SelectedDataContext.Provider value={value}>{children}</SelectedDataContext.Provider>;
 };

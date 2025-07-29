@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode, useId } from 'react';
 
 import { AnnotationShape } from './annotation-shape';
 import { Annotation } from './types';
@@ -16,11 +16,12 @@ function MaskAnnotations({
     height: number;
     isEnabled: boolean;
 }) {
+    const id = useId();
     const maskOpacity = isEnabled ? 0.8 : 0.0;
 
     return (
         <>
-            <mask id={'mask'}>
+            <mask id={`mask-${id}`}>
                 <rect x='0' y='0' width={width} height={height} style={{ fill: 'white', fillOpacity: 1.0 }} />
                 {annotations.map((annotation, idx) => (
                     <g
@@ -43,7 +44,7 @@ function MaskAnnotations({
                 y={0}
                 width={width}
                 height={height}
-                mask={`url(#mask)`}
+                mask={`url(#mask-${id})`}
                 style={{
                     fillOpacity: maskOpacity,
                     fill: 'black',

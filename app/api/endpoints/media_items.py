@@ -156,12 +156,32 @@ async def get_media_prediction(
 
 
 @router.get("/{media_id}/prediction-thumbnail", response_class=FileResponse)
-async def get_resized_media_image(
+async def get_resized_media_prediction_image(
     media_id: Annotated[str, Path(description="The ID of the media item")],
 ) -> FileResponse:
     """Return the resized image contents of the specified media item."""
     image_path = os.path.join(MEDIA_FOLDER, f"{media_id}-pred.jpg")
     resized_path = os.path.join(MEDIA_FOLDER, f"{media_id}-resized.jpg")
+
+    if not os.path.exists(image_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    if not os.path.exists(resized_path):
+        with Image.open(image_path) as img:
+            # Calculate the new size while maintaining the aspect ratio
+            img.thumbnail((300, 300), Image.LANCZOS)
+            img.save(resized_path)
+
+    return FileResponse(resized_path)
+
+
+@router.get("/{media_id}/image-thumbnail", response_class=FileResponse)
+async def get_resized_media_image(
+    media_id: Annotated[str, Path(description="The ID of the media item")],
+) -> FileResponse:
+    """Return the resized image contents of the specified media item."""
+    image_path = os.path.join(MEDIA_FOLDER, f"{media_id}-original.jpg")
+    resized_path = os.path.join(MEDIA_FOLDER, f"{media_id}-image-resized.jpg")
 
     if not os.path.exists(image_path):
         raise HTTPException(status_code=404, detail="Image not found")

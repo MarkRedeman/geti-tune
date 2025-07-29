@@ -14,6 +14,7 @@ import {
     Menu,
     MenuTrigger,
     RangeSlider,
+    ToggleButton,
 } from '@adobe/react-spectrum';
 import { ActionButton, Button, Divider, Flex, Text, View } from '@geti/ui';
 import { Delete, Filter } from '@geti/ui/icons';
@@ -219,6 +220,8 @@ const DataFilter = () => {
     const { selectedKeys, setSelectedKeys } = useSelectedData();
     const { onAccept, onDecline, onDelete } = useHandlers();
 
+    const { isFocussed, setIsFocussed } = useSelectedData();
+
     const isDisabled = selectedKeys !== 'all' && selectedKeys.size === 0;
     const isSelected = selectedKeys === 'all' || selectedKeys.size > 0;
     return (
@@ -271,6 +274,10 @@ const DataFilter = () => {
 
                 <View marginStart='auto'>
                     <Flex height='100%' gap='size-200' alignItems={'center'}>
+                        <ToggleButton isEmphasized isSelected={isFocussed} onChange={setIsFocussed}>
+                            Focus
+                        </ToggleButton>
+
                         <Suspense fallback={'Model: ...'}>
                             <DatasetInfo />
                         </Suspense>

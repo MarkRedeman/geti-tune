@@ -1,16 +1,35 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { AriaComponentsListBox, DialogContainer, GridLayout, ListBoxItem, Size, View, Virtualizer } from '@geti/ui';
+import {
+    AriaComponentsListBox,
+    DialogContainer,
+    GridLayout,
+    ListBoxItem,
+    Size,
+    ToggleButton,
+    View,
+    Virtualizer,
+} from '@geti/ui';
 
 import { $api, API_BASE_URL } from '../../api/client';
 import { SchemaMediaItem } from '../../api/openapi-spec';
-import { InspectDialog } from './inspect-dialog';
+import { ImageAnnotations, InspectDialog } from './inspect-dialog';
 import { useMediaState, useSelectedData } from './provider';
 import { useHandlers } from './toolbar';
 
 import classes from './media-items-list.module.scss';
 
-const MediaItem = ({ item, size, selectItem }: { item: SchemaMediaItem; size: Size; selectItem: () => void }) => {
+const MediaItem = ({
+    item,
+    size,
+    selectItem,
+    isFocussed,
+}: {
+    item: SchemaMediaItem;
+    size: Size;
+    selectItem: () => void;
+    isFocussed: boolean;
+}) => {
     const annotationState = useMediaState().get(item.image);
     const isRejected = annotationState === 'rejected';
     const isAccepted = annotationState === 'accepted';
@@ -24,6 +43,7 @@ const MediaItem = ({ item, size, selectItem }: { item: SchemaMediaItem; size: Si
                 display: 'grid',
                 placeItems: 'center',
                 height: '100%',
+                gridTemplateAreas: 'center',
             }}
             className={[classes.mediaItem, isRejected ? classes.rejected : '', isAccepted ? classes.accepted : ''].join(
                 ' '
@@ -37,9 +57,25 @@ const MediaItem = ({ item, size, selectItem }: { item: SchemaMediaItem; size: Si
                     width: item.width,
                     maxWidth: '100%',
                     maxHeight: `${size.height}px`,
+                    gridArea: 'center',
+                    display: 'none',
                 }}
                 onDoubleClick={selectItem}
             />
+            <div
+                onDoubleClick={selectItem}
+                style={{
+                    gridArea: 'center',
+                    width: '365px',
+                    height: '186px',
+                    //width: item.width,
+                    //maxWidth: '100%',
+                    //maxHeight: `${size.height}px`,
+                    //maxWidth: `${size.height}px`,
+                }}
+            >
+                <ImageAnnotations mediaItem={item} asThumbnail isFocussed={isFocussed} />
+            </div>
         </ListBoxItem>
     );
 };
@@ -164,6 +200,8 @@ export const Gallery = ({
         }
     };
 
+    const { isFocussed } = useSelectedData();
+
     return (
         <View UNSAFE_className={classes.mainContainer}>
             <Keybinding
@@ -190,6 +228,7 @@ export const Gallery = ({
                                 key={item.image}
                                 size={size}
                                 selectItem={() => setSelectedMediaItem(item)}
+                                isFocussed={isFocussed}
                             />
                         );
                     })}

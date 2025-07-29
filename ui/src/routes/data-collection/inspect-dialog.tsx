@@ -1,4 +1,6 @@
-import { Button, ButtonGroup, Content, Dialog, Divider, Flex, Form, Grid, Heading, View } from '@geti/ui';
+import { useState } from 'react';
+
+import { Button, ButtonGroup, Content, Dialog, Divider, Flex, Form, Grid, Heading, ToggleButton, View } from '@geti/ui';
 import { ChevronDownLight, ChevronUpLight } from '@geti/ui/icons';
 
 import { API_BASE_URL } from '../../api/client';
@@ -8,6 +10,51 @@ import { Annotation } from '../../components/stream/types';
 import { ZoomProvider } from '../../components/zoom/zoom';
 import { ZoomTransform } from '../../components/zoom/zoom-transform';
 import { useFilteredItems } from './gallery';
+
+export const ImageAnnotations = ({
+    mediaItem,
+    isFocussed = false,
+    asThumbnail = false,
+    scale = 0.9,
+}: {
+    mediaItem: SchemaMediaItem;
+    isFocussed?: boolean;
+    asThumbnail?: boolean;
+    scale?: number;
+}) => {
+    const size = { width: mediaItem.width, height: mediaItem.height };
+    const annotations: Array<Annotation> = mediaItem.predictions.annotations;
+    const src = asThumbnail
+        ? `${API_BASE_URL}/api/data-collection/${mediaItem.image}/image-thumbnail`
+        : `${API_BASE_URL}/api/data-collection/${mediaItem.image}/image`;
+
+    return (
+        <ZoomProvider initialScale={1.0}>
+            <ZoomTransform target={size}>
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateAreas: 'innercanvas',
+                        width: '100%',
+                        height: '100%',
+                    }}
+                >
+                    <div style={{ gridArea: 'innercanvas' }}>
+                        <img src={src} width={mediaItem.width} height={mediaItem.height} alt='Collected data' />
+                    </div>
+                    <div style={{ gridArea: 'innercanvas' }}>
+                        <Annotations
+                            annotations={annotations}
+                            width={size.width}
+                            height={size.height}
+                            isFocussed={isFocussed}
+                        />
+                    </div>
+                </div>
+            </ZoomTransform>
+        </ZoomProvider>
+    );
+};
 
 export const InspectDialog = ({
     mediaItem,
@@ -29,6 +76,7 @@ export const InspectDialog = ({
     const size = { width: mediaItem.width, height: mediaItem.height };
     const annotations: Array<Annotation> = mediaItem.predictions.annotations;
     const items = useFilteredItems();
+    const [isFocussed, setIsFocussed] = useState(false);
 
     return (
         <Dialog
@@ -96,7 +144,7 @@ export const InspectDialog = ({
                             {mediaItem.width}px x {mediaItem.height}px
                         </View>
                         <View gridArea={'toolbar'} backgroundColor={'gray-100'} padding='size-200'>
-                            <Flex height={'100%'} alignItems={'center'}>
+                            <Flex height={'100%'} alignItems={'center'} justifyContent={'space-between'}>
                                 <ButtonGroup>
                                     <Button variant='secondary' onPress={close}>
                                         Decline
@@ -105,39 +153,16 @@ export const InspectDialog = ({
                                         Accept
                                     </Button>
                                 </ButtonGroup>
+
+                                <ButtonGroup>
+                                    <ToggleButton isEmphasized isSelected={isFocussed} onChange={setIsFocussed}>
+                                        Focus
+                                    </ToggleButton>
+                                </ButtonGroup>
                             </Flex>
                         </View>
                         <View gridArea={'canvas'} backgroundColor={'gray-50'}>
-                            <ZoomProvider>
-                                <ZoomTransform target={size}>
-                                    <div
-                                        className="grid [grid-template-areas:'innercanvas'] w-full h-full items-center justify-items-center overflow-hidden"
-                                        style={{
-                                            display: 'grid',
-                                            gridTemplateAreas: 'innercanvas',
-                                            width: '100%',
-                                            height: '100%',
-                                        }}
-                                    >
-                                        <div style={{ gridArea: 'innercanvas' }}>
-                                            <img
-                                                src={`${API_BASE_URL}/api/data-collection/${mediaItem.image}/image`}
-                                                width={mediaItem.width}
-                                                height={mediaItem.height}
-                                                alt='Collected data'
-                                            />
-                                        </div>
-                                        <div style={{ gridArea: 'innercanvas' }}>
-                                            <Annotations
-                                                annotations={annotations}
-                                                width={size.width}
-                                                height={size.height}
-                                                isFocussed={true}
-                                            />
-                                        </div>
-                                    </div>
-                                </ZoomTransform>
-                            </ZoomProvider>
+                            <ImageAnnotations mediaItem={mediaItem} isFocussed={isFocussed} />
                         </View>
                     </Grid>
                 </View>
