@@ -3,21 +3,13 @@ import { Button, ButtonGroup, Content, Dialog, Divider, Form, Heading } from '@g
 import { API_BASE_URL } from '../../api/client';
 import { SchemaMediaItem } from '../../api/openapi-spec';
 import { Annotations } from '../../components/stream/annotations-canvas';
+import { Annotation } from '../../components/stream/types';
 import { ZoomProvider } from '../../components/zoom/zoom';
 import { ZoomTransform } from '../../components/zoom/zoom-transform';
 
 export const InspectDialog = ({ mediaItem, close }: { mediaItem: SchemaMediaItem; close: () => void }) => {
     const size = { width: mediaItem.width, height: mediaItem.height };
-    const annotations = mediaItem.json_content.annotations.map((annotation) => {
-        return {
-            ...annotation,
-            shape: {
-                ...annotation.shape,
-                type: annotation.shape.shape_type === 'rect' ? 'bounding-box' : annotation.shape.shape_type,
-            },
-        };
-    });
-    console.log(annotations);
+    const annotations: Array<Annotation> = mediaItem.predictions.annotations;
     return (
         <Dialog
             size='L'
@@ -54,7 +46,7 @@ export const InspectDialog = ({ mediaItem, close }: { mediaItem: SchemaMediaItem
                             >
                                 <div style={{ gridArea: 'innercanvas' }}>
                                     <img
-                                        src={`${API_BASE_URL}/api/data-collection/${mediaItem.image}/prediction`}
+                                        src={`${API_BASE_URL}/api/data-collection/${mediaItem.image}/image`}
                                         width={mediaItem.width}
                                         height={mediaItem.height}
                                         alt='Collected data'

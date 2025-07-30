@@ -32,8 +32,8 @@ class LABEL_BEHAVIOUR(int, Enum):
 
 
 class ShapeType(str, Enum):
-    RECT = "rect"
-    ROTATED_RECT = "rotated-rect"
+    RECT = "bounding-box"
+    ROTATED_RECT = "oriented-bounding-box"
     CIRCLE = "circle"
     POLYGON = "polygon"
     POSE = "pose"
@@ -64,7 +64,7 @@ class Point:
 
 
 class Rect(BaseModel):
-    shape_type: Literal[ShapeType.RECT]
+    type: Literal[ShapeType.RECT]
     x: float
     y: float
     width: float
@@ -72,23 +72,23 @@ class Rect(BaseModel):
 
 
 class RotatedRect(BaseModel):
-    shape_type: Literal[ShapeType.ROTATED_RECT]
-    x: float
-    y: float
+    type: Literal[ShapeType.ROTATED_RECT]
+    cx: float
+    cy: float
     width: float
     height: float
     angle: float
 
 
 class Circle(BaseModel):
-    shape_type: Literal[ShapeType.CIRCLE]
-    x: float
-    y: float
+    type: Literal[ShapeType.CIRCLE]
+    cx: float
+    cy: float
     r: float
 
 
 class Polygon(BaseModel):
-    shape_type: Literal[ShapeType.POLYGON]
+    type: Literal[ShapeType.POLYGON]
     points: list[Point]
 
 
@@ -98,13 +98,13 @@ class KeypointNode(Point):
 
 
 class Pose(BaseModel):
-    shape_type: Literal[ShapeType.POSE]
+    type: Literal[ShapeType.POSE]
     points: list[KeypointNode]
 
 
 Shape = Annotated[
     Rect | RotatedRect | Circle | Polygon | Pose,
-    Field(discriminator="shape_type"),
+    Field(discriminator="type"),
 ]
 
 
@@ -146,7 +146,7 @@ class DetectionAnnotationCreator(AnnotationCreator):
             zip(result.bboxes, result.labels, result.scores, result.label_names)
         ):
             x1, y1, x2, y2 = map(int, bbox)
-            shape = Rect(shape_type=ShapeType.RECT, x=x1, y=y1, width=x2 - x1, height=y2 - y1)
+            shape = Rect(type=ShapeType.RECT, x=x1, y=y1, width=x2 - x1, height=y2 - y1)
             labels = [Label(id=str(label), name=name, score=float(score))]
 
             annotation = Annotation(
@@ -197,7 +197,7 @@ class InstanceSegmentationAnnotationCreator(AnnotationCreator):
                 ]
 
                 shape = Polygon(
-                    shape_type=ShapeType.POLYGON,
+                    type=ShapeType.POLYGON,
                     points=points,
                 )
                 annotations.append(
@@ -224,7 +224,7 @@ class AnomalyDetectionAnnotationCreator(AnnotationCreator):
         score = result.pred_score if result.pred_score else 0
         labels = [Label(id=pred_label, name=pred_label, score=float(score))]
 
-        shape = Rect(shape_type=ShapeType.RECT, x=roi.x, y=roi.y, width=roi.width, height=roi.height)
+        shape = Rect(type=ShapeType.RECT, x=roi.x, y=roi.y, width=roi.width, height=roi.height)
         annotation = Annotation(
             id=str(uuid.uuid4()),
             labels=labels,
@@ -248,7 +248,7 @@ class ClassificationAnnotationCreator(AnnotationCreator):
             for _label_idx, label_name, prob in result.top_labels:
                 labels.append(Label(id=str(label_name), name=label_name, score=float(prob)))
 
-        shape = Rect(shape_type=ShapeType.RECT, x=roi.x, y=roi.y, width=roi.width, height=roi.height)
+        shape = Rect(type=ShapeType.RECT, x=roi.x, y=roi.y, width=roi.width, height=roi.height)
         annotation = Annotation(
             id=str(uuid.uuid4()),
             labels=labels,
@@ -331,7 +331,7 @@ class SegmentationAnnotationCreator(AnnotationCreator):
             label = label_map[contour.label]
 
             shape = Polygon(
-                shape_type=ShapeType.POLYGON,
+                type=ShapeType.POLYGON,
                 points=points,
             )
 

@@ -15,9 +15,10 @@ function OrientedBoundingBox({ shape }: { shape: OrientedBoundingBoxType }) {
     );
 }
 
+const getFormattedPoints = (points: Array<{ x: number; y: number }>): string =>
+    points.map(({ x, y }) => `${x},${y}`).join(' ');
+
 function Polygon({ shape }: { shape: PolygonType }) {
-    const getFormattedPoints = (points: Array<{ x: number; y: number }>): string =>
-        points.map(({ x, y }) => `${x},${y}`).join(' ');
     const points = getFormattedPoints(shape.points);
 
     return <polygon points={points} />;

@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import Annotated
 
+from app.utils.annotations import Annotation
 import anyio
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -19,11 +20,15 @@ cur_dir = Path(__file__).parent
 MEDIA_FOLDER = cur_dir / "../../../data/output"
 
 
+class Predictions(BaseModel):
+    annotations: list[Annotation]
+
+
 class MediaItem(BaseModel):
     image: str
     prediction: str
     text_content: str
-    json_content: dict | None = None
+    predictions: Predictions
     width: int
     height: int
     aspect_ratio: float
@@ -95,15 +100,15 @@ async def list_media_items(
         prefix = item["image"]
         json_path = os.path.join(MEDIA_FOLDER, f"{prefix}-pred.json")
 
-        item["json_content"] = None
+        item["predictions"] = None
         if os.path.exists(json_path):
             try:
                 async with await anyio.open_file(json_path) as file:
                     content = await file.read()
-                    item["json_content"] = json.loads(content)
+                    item["predictions"] = json.loads(content)
             except Exception as e:
                 logger.warning(f"Could not read or parse {json_path}: {e}")
-                item["json_content"] = None
+                item["predictions"] = None
 
         # For compatibility, you may want to keep the old text_content for now
         item["text_content"] = "test"

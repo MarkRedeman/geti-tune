@@ -20,7 +20,17 @@ export type Polygon = {
     points: Array<Point>;
 };
 
-export type Shape = BoundingBox | Polygon | Circle | OrientedBoundingBox;
+type Pose = {
+    type: 'pose';
+    points: Array<{
+        x: number;
+        y: number;
+        label: Label;
+        is_visible: boolean;
+    }>;
+};
+
+export type Shape = BoundingBox | Polygon | Circle | OrientedBoundingBox | Pose;
 
 export type Label = { id: string; name: string; color: string; isPrediction: boolean; score?: number };
 

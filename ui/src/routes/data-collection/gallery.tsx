@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { AriaComponentsListBox, DialogContainer, GridLayout, ListBoxItem, Size, View, Virtualizer } from '@geti/ui';
 
@@ -6,6 +6,7 @@ import { $api, API_BASE_URL } from '../../api/client';
 import { SchemaMediaItem } from '../../api/openapi-spec';
 import { InspectDialog } from './inspect-dialog';
 import { useMediaState, useSelectedData } from './provider';
+import { useHandlers } from './toolbar';
 
 import classes from './media-items-list.module.scss';
 
@@ -69,6 +70,55 @@ export const useFilteredItems = () => {
     });
 };
 
+function Keybinding({
+    onNext,
+    onPrevious,
+    onAccept,
+    onDecline,
+    onDelete,
+}: {
+    onNext: () => void;
+    onPrevious: () => void;
+    onAccept: () => void;
+    onDecline: () => void;
+    onDelete: () => void;
+}) {
+    // Create refs to always point to the latest callbacks
+    const onNextRef = useRef(onNext);
+    const onPreviousRef = useRef(onPrevious);
+    const onAcceptRef = useRef(onAccept);
+    const onDeclineRef = useRef(onDecline);
+    const onDeleteRef = useRef(onDelete);
+
+    // Update refs on every render
+    onNextRef.current = onNext;
+    onPreviousRef.current = onPrevious;
+    onAcceptRef.current = onAccept;
+    onDeclineRef.current = onDecline;
+    onDeleteRef.current = onDelete;
+
+    useEffect(() => {
+        function handleKeyDown(e: KeyboardEvent) {
+            if (e.key === 'ArrowLeft') {
+                onPreviousRef.current();
+            } else if (e.key === 'ArrowRight') {
+                onNextRef.current();
+            } else if (e.key === 'a' || e.key === 'A') {
+                onAcceptRef.current();
+            } else if (e.key === 'd' || e.key === 'D') {
+                onDeclineRef.current();
+            } else if (e.key === 'Delete') {
+                onDeleteRef.current();
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []); // Only run once on mount/unmount
+
+    return null;
+}
+
 export const Gallery = ({
     maxColumns = 8,
     size = new Size(345 - 18, 198 - 12),
@@ -79,7 +129,7 @@ export const Gallery = ({
     gap?: number;
 }) => {
     const [selectedMediaItem, setSelectedMediaItem] = useState<null | SchemaMediaItem>(null);
-    const { selectedKeys, setSelectedKeys } = useSelectedData();
+    const { selectedKeys, setSelectedKeys, setMediaState } = useSelectedData();
 
     const config = { minItemSize: 150, gap, maxColumns };
     const layoutOptions = {
@@ -90,9 +140,37 @@ export const Gallery = ({
     };
 
     const items = useFilteredItems();
+    const { onAccept, onDecline, onDelete } = useHandlers();
 
     return (
         <View UNSAFE_className={classes.mainContainer}>
+            <Keybinding
+                onAccept={onAccept}
+                onDecline={onDecline}
+                onDelete={onDelete}
+                onNext={() => {
+                    const currentIndex = items.findIndex((item) => item.image === selectedMediaItem?.image);
+
+                    const nextMediaItem = items.find((_, idx) => {
+                        return idx > currentIndex;
+                    });
+
+                    if (nextMediaItem) {
+                        setSelectedMediaItem(nextMediaItem);
+                    }
+                }}
+                onPrevious={() => {
+                    const currentIndex = items.findIndex((item) => item.image === selectedMediaItem?.image);
+
+                    const previousMediaItem = items.findLast((_, idx) => {
+                        return idx < currentIndex;
+                    });
+
+                    if (previousMediaItem) {
+                        setSelectedMediaItem(previousMediaItem);
+                    }
+                }}
+            />
             <Virtualizer layout={GridLayout} layoutOptions={layoutOptions}>
                 <AriaComponentsListBox
                     //ref={ref}

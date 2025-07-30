@@ -150,7 +150,7 @@ const ExportButton = () => {
     );
 };
 
-const DataFilter = () => {
+export function useHandlers() {
     const { selectedKeys, setSelectedKeys } = useSelectedData();
     const setMediaState = useSetMediaState();
 
@@ -207,6 +207,17 @@ const DataFilter = () => {
         });
         setSelectedKeys(new Set());
     };
+
+    return {
+        onDelete,
+        onDecline,
+        onAccept,
+    };
+}
+
+const DataFilter = () => {
+    const { selectedKeys, setSelectedKeys } = useSelectedData();
+    const { onAccept, onDecline, onDelete } = useHandlers();
 
     const isDisabled = selectedKeys !== 'all' && selectedKeys.size === 0;
     const isSelected = selectedKeys === 'all' || selectedKeys.size > 0;
