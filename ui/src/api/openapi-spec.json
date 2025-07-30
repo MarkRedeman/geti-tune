@@ -1392,6 +1392,151 @@
                 }
             }
         },
+        "/api/data-collection": {
+            "get": {
+                "summary": "List Media Items",
+                "description": "List media items with pagination.",
+                "operationId": "list_media_items_api_data_collection_get",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "description": "Page number to retrieve",
+                            "default": 1,
+                            "title": "Page"
+                        },
+                        "description": "Page number to retrieve"
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "description": "Number of items per page",
+                            "default": 1500,
+                            "title": "Page Size"
+                        },
+                        "description": "Number of items per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedResponse" } }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/data-collection/{media_id}/image": {
+            "get": {
+                "summary": "Get Media Image",
+                "description": "Return the image contents of the specified media item.",
+                "operationId": "get_media_image_api_data_collection__media_id__image_get",
+                "parameters": [
+                    {
+                        "name": "media_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Media Id" }
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Successful Response" },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/data-collection/{media_id}/prediction": {
+            "get": {
+                "summary": "Get Media Prediction",
+                "description": "Return the image contents of the specified media item.",
+                "operationId": "get_media_prediction_api_data_collection__media_id__prediction_get",
+                "parameters": [
+                    {
+                        "name": "media_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Media Id" }
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Successful Response" },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/data-collection/{media_id}/prediction-thumbnail": {
+            "get": {
+                "summary": "Get Resized Media Prediction Image",
+                "description": "Return the resized image contents of the specified media item.",
+                "operationId": "get_resized_media_prediction_image_api_data_collection__media_id__prediction_thumbnail_get",
+                "parameters": [
+                    {
+                        "name": "media_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Media Id" }
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Successful Response" },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/data-collection/{media_id}/image-thumbnail": {
+            "get": {
+                "summary": "Get Resized Media Image",
+                "description": "Return the resized image contents of the specified media item.",
+                "operationId": "get_resized_media_image_api_data_collection__media_id__image_thumbnail_get",
+                "parameters": [
+                    {
+                        "name": "media_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Media Id" }
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Successful Response" },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } }
+                        }
+                    }
+                }
+            }
+        },
         "/api/input_hook": {
             "post": {
                 "tags": ["webrtc"],
@@ -1402,6 +1547,62 @@
                     "content": { "application/json": { "schema": { "$ref": "#/components/schemas/InputData" } } },
                     "required": true
                 },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/inference": {
+            "get": {
+                "tags": ["webrtc"],
+                "summary": "Stream Updates",
+                "description": "Get event stream of inference results",
+                "operationId": "stream_updates_api_inference_get",
+                "parameters": [
+                    {
+                        "name": "webrtc_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Webrtc Id" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/predictions/latest": {
+            "get": {
+                "tags": ["webrtc"],
+                "summary": "Latest Updates",
+                "description": "Get latest inference result",
+                "operationId": "latest_updates_api_predictions_latest_get",
+                "parameters": [
+                    {
+                        "name": "webrtc_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Webrtc Id" }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -1452,6 +1653,36 @@
     },
     "components": {
         "schemas": {
+            "Annotation": {
+                "properties": {
+                    "id": { "type": "string", "title": "Id" },
+                    "labels": { "items": { "$ref": "#/components/schemas/Label" }, "type": "array", "title": "Labels" },
+                    "shape": {
+                        "oneOf": [
+                            { "$ref": "#/components/schemas/Rect" },
+                            { "$ref": "#/components/schemas/RotatedRect" },
+                            { "$ref": "#/components/schemas/Circle" },
+                            { "$ref": "#/components/schemas/Polygon" },
+                            { "$ref": "#/components/schemas/Pose" }
+                        ],
+                        "title": "Shape",
+                        "discriminator": {
+                            "propertyName": "type",
+                            "mapping": {
+                                "bounding-box": "#/components/schemas/Rect",
+                                "circle": "#/components/schemas/Circle",
+                                "oriented-bounding-box": "#/components/schemas/RotatedRect",
+                                "polygon": "#/components/schemas/Polygon",
+                                "pose": "#/components/schemas/Pose"
+                            }
+                        }
+                    },
+                    "z_index": { "type": "integer", "title": "Z Index" }
+                },
+                "type": "object",
+                "required": ["id", "labels", "shape", "z_index"],
+                "title": "Annotation"
+            },
             "Body": {
                 "properties": {
                     "sdp": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Sdp" },
@@ -1513,6 +1744,17 @@
                 "type": "object",
                 "required": ["yaml_file"],
                 "title": "Body_import_source_api_sources_import_post"
+            },
+            "Circle": {
+                "properties": {
+                    "type": { "type": "string", "const": "circle", "title": "Type" },
+                    "cx": { "type": "number", "title": "Cx" },
+                    "cy": { "type": "number", "title": "Cy" },
+                    "r": { "type": "number", "title": "R" }
+                },
+                "type": "object",
+                "required": ["type", "cx", "cy", "r"],
+                "title": "Circle"
             },
             "DisconnectedOutputConfig": {
                 "properties": {
@@ -1637,16 +1879,52 @@
                 "required": ["webrtc_id", "conf_threshold"],
                 "title": "InputData"
             },
+            "KeypointNode": {
+                "properties": { "x": { "type": "number", "title": "X" }, "y": { "type": "number", "title": "Y" } },
+                "type": "object",
+                "required": ["x", "y"],
+                "title": "KeypointNode"
+            },
+            "Label": {
+                "properties": {
+                    "id": { "type": "string", "title": "Id" },
+                    "name": { "type": "string", "title": "Name" },
+                    "score": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Score" }
+                },
+                "type": "object",
+                "required": ["id", "name"],
+                "title": "Label"
+            },
+            "MediaItem": {
+                "properties": {
+                    "image": { "type": "string", "title": "Image" },
+                    "prediction": { "type": "string", "title": "Prediction" },
+                    "text_content": { "type": "string", "title": "Text Content" },
+                    "predictions": { "$ref": "#/components/schemas/Predictions" },
+                    "width": { "type": "integer", "title": "Width" },
+                    "height": { "type": "integer", "title": "Height" },
+                    "aspect_ratio": { "type": "number", "title": "Aspect Ratio" }
+                },
+                "type": "object",
+                "required": ["image", "prediction", "text_content", "predictions", "width", "height", "aspect_ratio"],
+                "title": "MediaItem"
+            },
             "Model": {
                 "properties": {
                     "id": { "type": "string", "format": "uuid", "title": "Id" },
-                    "name": { "type": "string", "title": "Name", "default": "Default Name" }
+                    "name": { "type": "string", "title": "Name", "default": "Default Name" },
+                    "format": { "$ref": "#/components/schemas/ModelFormat", "default": "openvino_ir" }
                 },
                 "type": "object",
                 "title": "Model",
                 "description": "Base model schema that includes common fields for all models.\nThis can be extended by other schemas to include additional fields.",
-                "example": { "id": "76e07d18-196e-4e33-bf98-ac1d35dca4cb", "name": "YOLO-X for Vehicle Detection" }
+                "example": {
+                    "format": "openvino_ir",
+                    "id": "76e07d18-196e-4e33-bf98-ac1d35dca4cb",
+                    "name": "YOLO-X for Vehicle Detection"
+                }
             },
+            "ModelFormat": { "type": "string", "enum": ["openvino_ir", "onnx"], "title": "ModelFormat" },
             "ModelResponse": {
                 "properties": { "model_name": { "type": "string", "title": "Model Name" } },
                 "type": "object",
@@ -1697,6 +1975,22 @@
                 "enum": ["image_original", "image_with_predictions", "predictions"],
                 "title": "OutputFormat"
             },
+            "PaginatedResponse": {
+                "properties": {
+                    "page": { "type": "integer", "title": "Page" },
+                    "page_size": { "type": "integer", "title": "Page Size" },
+                    "total_items": { "type": "integer", "title": "Total Items" },
+                    "total_pages": { "type": "integer", "title": "Total Pages" },
+                    "items": {
+                        "items": { "$ref": "#/components/schemas/MediaItem" },
+                        "type": "array",
+                        "title": "Items"
+                    }
+                },
+                "type": "object",
+                "required": ["page", "page_size", "total_items", "total_pages", "items"],
+                "title": "PaginatedResponse"
+            },
             "Pipeline": {
                 "properties": {
                     "id": { "type": "string", "format": "uuid", "title": "Id" },
@@ -1727,6 +2021,58 @@
                 }
             },
             "PipelineStatus": { "type": "string", "enum": ["idle", "running"], "title": "PipelineStatus" },
+            "Point": {
+                "properties": { "x": { "type": "number", "title": "X" }, "y": { "type": "number", "title": "Y" } },
+                "type": "object",
+                "required": ["x", "y"],
+                "title": "Point"
+            },
+            "Polygon": {
+                "properties": {
+                    "type": { "type": "string", "const": "polygon", "title": "Type" },
+                    "points": { "items": { "$ref": "#/components/schemas/Point" }, "type": "array", "title": "Points" }
+                },
+                "type": "object",
+                "required": ["type", "points"],
+                "title": "Polygon"
+            },
+            "Pose": {
+                "properties": {
+                    "type": { "type": "string", "const": "pose", "title": "Type" },
+                    "points": {
+                        "items": { "$ref": "#/components/schemas/KeypointNode" },
+                        "type": "array",
+                        "title": "Points"
+                    }
+                },
+                "type": "object",
+                "required": ["type", "points"],
+                "title": "Pose"
+            },
+            "Predictions": {
+                "properties": {
+                    "annotations": {
+                        "items": { "$ref": "#/components/schemas/Annotation" },
+                        "type": "array",
+                        "title": "Annotations"
+                    }
+                },
+                "type": "object",
+                "required": ["annotations"],
+                "title": "Predictions"
+            },
+            "Rect": {
+                "properties": {
+                    "type": { "type": "string", "const": "bounding-box", "title": "Type" },
+                    "x": { "type": "number", "title": "X" },
+                    "y": { "type": "number", "title": "Y" },
+                    "width": { "type": "number", "title": "Width" },
+                    "height": { "type": "number", "title": "Height" }
+                },
+                "type": "object",
+                "required": ["type", "x", "y", "width", "height"],
+                "title": "Rect"
+            },
             "RosOutputConfig": {
                 "properties": {
                     "id": { "type": "string", "format": "uuid", "title": "Id" },
@@ -1750,6 +2096,19 @@
                     "sink_type": "ros",
                     "topic": "/predictions"
                 }
+            },
+            "RotatedRect": {
+                "properties": {
+                    "type": { "type": "string", "const": "oriented-bounding-box", "title": "Type" },
+                    "cx": { "type": "number", "title": "Cx" },
+                    "cy": { "type": "number", "title": "Cy" },
+                    "width": { "type": "number", "title": "Width" },
+                    "height": { "type": "number", "title": "Height" },
+                    "angle": { "type": "number", "title": "Angle" }
+                },
+                "type": "object",
+                "required": ["type", "cx", "cy", "width", "height", "angle"],
+                "title": "RotatedRect"
             },
             "ValidationError": {
                 "properties": {

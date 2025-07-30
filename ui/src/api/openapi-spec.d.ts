@@ -509,6 +509,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    '/api/data-collection': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Media Items
+         * @description List media items with pagination.
+         */
+        get: operations['list_media_items_api_data_collection_get'];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/data-collection/{media_id}/image': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Media Image
+         * @description Return the image contents of the specified media item.
+         */
+        get: operations['get_media_image_api_data_collection__media_id__image_get'];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/data-collection/{media_id}/prediction': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Media Prediction
+         * @description Return the image contents of the specified media item.
+         */
+        get: operations['get_media_prediction_api_data_collection__media_id__prediction_get'];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/data-collection/{media_id}/prediction-thumbnail': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Resized Media Prediction Image
+         * @description Return the resized image contents of the specified media item.
+         */
+        get: operations['get_resized_media_prediction_image_api_data_collection__media_id__prediction_thumbnail_get'];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/data-collection/{media_id}/image-thumbnail': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Resized Media Image
+         * @description Return the resized image contents of the specified media item.
+         */
+        get: operations['get_resized_media_image_api_data_collection__media_id__image_thumbnail_get'];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     '/api/input_hook': {
         parameters: {
             query?: never;
@@ -523,6 +623,46 @@ export interface paths {
          * @description Update webrtc input for user
          */
         post: operations['webrtc_input_hook_api_input_hook_post'];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/inference': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Updates
+         * @description Get event stream of inference results
+         */
+        get: operations['stream_updates_api_inference_get'];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    '/api/predictions/latest': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Latest Updates
+         * @description Get latest inference result
+         */
+        get: operations['latest_updates_api_predictions_latest_get'];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -592,6 +732,22 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Annotation */
+        Annotation: {
+            /** Id */
+            id: string;
+            /** Labels */
+            labels: components['schemas']['Label'][];
+            /** Shape */
+            shape:
+                | components['schemas']['Rect']
+                | components['schemas']['RotatedRect']
+                | components['schemas']['Circle']
+                | components['schemas']['Polygon']
+                | components['schemas']['Pose'];
+            /** Z Index */
+            z_index: number;
+        };
         /** Body */
         Body: {
             /** Sdp */
@@ -644,6 +800,20 @@ export interface components {
              * @description YAML file containing the source configuration
              */
             yaml_file: string;
+        };
+        /** Circle */
+        Circle: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: 'circle';
+            /** Cx */
+            cx: number;
+            /** Cy */
+            cy: number;
+            /** R */
+            r: number;
         };
         /**
          * DisconnectedOutputConfig
@@ -810,11 +980,44 @@ export interface components {
             /** Conf Threshold */
             conf_threshold: number;
         };
+        /** KeypointNode */
+        KeypointNode: {
+            /** X */
+            x: number;
+            /** Y */
+            y: number;
+        };
+        /** Label */
+        Label: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Score */
+            score?: number | null;
+        };
+        /** MediaItem */
+        MediaItem: {
+            /** Image */
+            image: string;
+            /** Prediction */
+            prediction: string;
+            /** Text Content */
+            text_content: string;
+            predictions: components['schemas']['Predictions'];
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+            /** Aspect Ratio */
+            aspect_ratio: number;
+        };
         /**
          * Model
          * @description Base model schema that includes common fields for all models.
          *     This can be extended by other schemas to include additional fields.
          * @example {
+         *       "format": "openvino_ir",
          *       "id": "76e07d18-196e-4e33-bf98-ac1d35dca4cb",
          *       "name": "YOLO-X for Vehicle Detection"
          *     }
@@ -830,7 +1033,14 @@ export interface components {
              * @default Default Name
              */
             name: string;
+            /** @default openvino_ir */
+            format: components['schemas']['ModelFormat'];
         };
+        /**
+         * ModelFormat
+         * @enum {string}
+         */
+        ModelFormat: 'openvino_ir' | 'onnx';
         /** ModelResponse */
         ModelResponse: {
             /** Model Name */
@@ -893,6 +1103,19 @@ export interface components {
          * @enum {string}
          */
         OutputFormat: 'image_original' | 'image_with_predictions' | 'predictions';
+        /** PaginatedResponse */
+        PaginatedResponse: {
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total Items */
+            total_items: number;
+            /** Total Pages */
+            total_pages: number;
+            /** Items */
+            items: components['schemas']['MediaItem'][];
+        };
         /**
          * Pipeline
          * @example {
@@ -929,6 +1152,54 @@ export interface components {
          * @enum {string}
          */
         PipelineStatus: 'idle' | 'running';
+        /** Point */
+        Point: {
+            /** X */
+            x: number;
+            /** Y */
+            y: number;
+        };
+        /** Polygon */
+        Polygon: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: 'polygon';
+            /** Points */
+            points: components['schemas']['Point'][];
+        };
+        /** Pose */
+        Pose: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: 'pose';
+            /** Points */
+            points: components['schemas']['KeypointNode'][];
+        };
+        /** Predictions */
+        Predictions: {
+            /** Annotations */
+            annotations: components['schemas']['Annotation'][];
+        };
+        /** Rect */
+        Rect: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: 'bounding-box';
+            /** X */
+            x: number;
+            /** Y */
+            y: number;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+        };
         /**
          * RosOutputConfig
          * @example {
@@ -963,6 +1234,24 @@ export interface components {
             sink_type: 'ros';
             /** Topic */
             topic: string;
+        };
+        /** RotatedRect */
+        RotatedRect: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: 'oriented-bounding-box';
+            /** Cx */
+            cx: number;
+            /** Cy */
+            cy: number;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+            /** Angle */
+            angle: number;
         };
         /** ValidationError */
         ValidationError: {
@@ -1071,6 +1360,7 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type SchemaAnnotation = components['schemas']['Annotation'];
 export type SchemaBody = components['schemas']['Body'];
 export type SchemaBodyAddModelApiModelsPost = components['schemas']['Body_add_model_api_models_post'];
 export type SchemaBodyImportPipelineApiPipelinesImportPost =
@@ -1078,6 +1368,7 @@ export type SchemaBodyImportPipelineApiPipelinesImportPost =
 export type SchemaBodyImportSinkApiSinksImportPost = components['schemas']['Body_import_sink_api_sinks_import_post'];
 export type SchemaBodyImportSourceApiSourcesImportPost =
     components['schemas']['Body_import_source_api_sources_import_post'];
+export type SchemaCircle = components['schemas']['Circle'];
 export type SchemaDisconnectedOutputConfig = components['schemas']['DisconnectedOutputConfig'];
 export type SchemaDisconnectedSourceConfig = components['schemas']['DisconnectedSourceConfig'];
 export type SchemaFolderOutputConfig = components['schemas']['FolderOutputConfig'];
@@ -1085,14 +1376,25 @@ export type SchemaHttpValidationError = components['schemas']['HTTPValidationErr
 export type SchemaIpCameraSourceConfig = components['schemas']['IPCameraSourceConfig'];
 export type SchemaImagesFolderSourceConfig = components['schemas']['ImagesFolderSourceConfig'];
 export type SchemaInputData = components['schemas']['InputData'];
+export type SchemaKeypointNode = components['schemas']['KeypointNode'];
+export type SchemaLabel = components['schemas']['Label'];
+export type SchemaMediaItem = components['schemas']['MediaItem'];
 export type SchemaModel = components['schemas']['Model'];
+export type SchemaModelFormat = components['schemas']['ModelFormat'];
 export type SchemaModelResponse = components['schemas']['ModelResponse'];
 export type SchemaModelsInfoResponse = components['schemas']['ModelsInfoResponse'];
 export type SchemaMqttOutputConfig = components['schemas']['MqttOutputConfig'];
 export type SchemaOutputFormat = components['schemas']['OutputFormat'];
+export type SchemaPaginatedResponse = components['schemas']['PaginatedResponse'];
 export type SchemaPipeline = components['schemas']['Pipeline'];
 export type SchemaPipelineStatus = components['schemas']['PipelineStatus'];
+export type SchemaPoint = components['schemas']['Point'];
+export type SchemaPolygon = components['schemas']['Polygon'];
+export type SchemaPose = components['schemas']['Pose'];
+export type SchemaPredictions = components['schemas']['Predictions'];
+export type SchemaRect = components['schemas']['Rect'];
 export type SchemaRosOutputConfig = components['schemas']['RosOutputConfig'];
+export type SchemaRotatedRect = components['schemas']['RotatedRect'];
 export type SchemaValidationError = components['schemas']['ValidationError'];
 export type SchemaVideoFileSourceConfig = components['schemas']['VideoFileSourceConfig'];
 export type SchemaWebcamSourceConfig = components['schemas']['WebcamSourceConfig'];
@@ -2224,6 +2526,156 @@ export interface operations {
             };
         };
     };
+    list_media_items_api_data_collection_get: {
+        parameters: {
+            query?: {
+                /** @description Page number to retrieve */
+                page?: number;
+                /** @description Number of items per page */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['PaginatedResponse'];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['HTTPValidationError'];
+                };
+            };
+        };
+    };
+    get_media_image_api_data_collection__media_id__image_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                media_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['HTTPValidationError'];
+                };
+            };
+        };
+    };
+    get_media_prediction_api_data_collection__media_id__prediction_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                media_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['HTTPValidationError'];
+                };
+            };
+        };
+    };
+    get_resized_media_prediction_image_api_data_collection__media_id__prediction_thumbnail_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                media_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['HTTPValidationError'];
+                };
+            };
+        };
+    };
+    get_resized_media_image_api_data_collection__media_id__image_thumbnail_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                media_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['HTTPValidationError'];
+                };
+            };
+        };
+    };
     webrtc_input_hook_api_input_hook_post: {
         parameters: {
             query?: never;
@@ -2236,6 +2688,68 @@ export interface operations {
                 'application/json': components['schemas']['InputData'];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['HTTPValidationError'];
+                };
+            };
+        };
+    };
+    stream_updates_api_inference_get: {
+        parameters: {
+            query: {
+                webrtc_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['HTTPValidationError'];
+                };
+            };
+        };
+    };
+    latest_updates_api_predictions_latest_get: {
+        parameters: {
+            query: {
+                webrtc_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
