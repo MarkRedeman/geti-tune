@@ -1,3 +1,5 @@
+import dataclasses
+import json
 import logging
 import os
 from datetime import datetime
@@ -8,6 +10,7 @@ from model_api.models.result import Result
 
 from app.schemas.sink import FolderSinkConfig, OutputFormat
 from app.services.dispatchers.base import BaseDispatcher
+from app.utils.annotations import Roi, ToAnnotation, serialize_annotation
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +53,7 @@ class FolderDispatcher(BaseDispatcher):
         image_orig_file = os.path.join(self.output_folder, f"{timestamp}-original.jpg")
         image_viz_file = os.path.join(self.output_folder, f"{timestamp}-pred.jpg")
         pred_txt_file = os.path.join(self.output_folder, f"{timestamp}-pred.txt")
+        pred_json_file = os.path.join(self.output_folder, f"{timestamp}-pred.json")
 
         logger.debug(f"Saving results to folder for timestamp '{timestamp}' to folder '{self.output_folder}'")
 
@@ -58,4 +62,15 @@ class FolderDispatcher(BaseDispatcher):
         if OutputFormat.IMAGE_WITH_PREDICTIONS in self.output_formats:
             self._write_image_to_file(image_with_visualization, image_viz_file)
         if OutputFormat.PREDICTIONS in self.output_formats:
+            annotations = ToAnnotation.to_annotations(
+                predictions,
+                Roi(x=0, y=0, width=original_image.shape[1], height=original_image.shape[0]),
+            )
+
+            print(len(annotations), str(predictions))
+            # TODO: add annotations here
             self._write_predictions_to_file(str(predictions), pred_txt_file)
+            self._write_predictions_to_file(
+                json.dumps({"annotations": [serialize_annotation(annotation) for annotation in annotations]}),
+                pred_json_file,
+            )
