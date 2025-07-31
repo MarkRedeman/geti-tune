@@ -24,11 +24,11 @@ import numpy as np
 import psutil
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastrtc import AdditionalOutputs, Stream
 from pydantic import BaseModel, Field
 
-from app.api.endpoints import configuration, models, pipelines, sinks, sources, system
+from app.api.endpoints import configuration, media_items, models, pipelines, sinks, sources, system
 from app.utils.ipc import (
     frame_queue,
     mp_config_changed_condition,
@@ -106,6 +106,7 @@ app = FastAPI(
     # TODO add contact info
     # TODO add license
 )
+
 app.add_middleware(  # TODO restrict settings in production
     CORSMiddleware,
     allow_origins=["*"],
@@ -120,6 +121,7 @@ app.include_router(pipelines.router)
 app.include_router(models.router)
 app.include_router(configuration.router)
 app.include_router(system.router)
+app.include_router(media_items.router)
 
 cur_dir = Path(__file__).parent
 
@@ -142,6 +144,25 @@ class InputData(BaseModel):
 async def webrtc_input_hook(data: InputData) -> None:
     """Update webrtc input for user"""
     stream.set_input(data.webrtc_id, data.conf_threshold)
+
+
+@app.get("/api/inference", tags=["webrtc"])
+async def stream_updates(webrtc_id: str) -> StreamingResponse:
+    """Get event stream of inference results"""
+
+    async def output_stream():
+        async for output in stream.output_stream(webrtc_id):
+            # Output is the AdditionalOutputs instance
+            # Be sure to serialize it however you would like
+            yield f"data: {output.args[0]}\n\n"
+
+    return StreamingResponse(output_stream(), media_type="text/event-stream")
+
+
+@app.get("/api/predictions/latest", tags=["webrtc"])
+async def latest_updates(webrtc_id: str):  # noqa: ANN201
+    """Get latest inference result"""
+    return stream.fetch_latest_output(webrtc_id)
 
 
 stream.mount(app, "/api")
