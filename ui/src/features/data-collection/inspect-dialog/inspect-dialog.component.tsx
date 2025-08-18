@@ -3,13 +3,13 @@ import { useState } from 'react';
 import { Button, ButtonGroup, Content, Dialog, Divider, Flex, Form, Grid, Heading, ToggleButton, View } from '@geti/ui';
 import { ChevronDownLight, ChevronUpLight } from '@geti/ui/icons';
 
-import { API_BASE_URL } from '../../api/client';
-import { SchemaMediaItem } from '../../api/openapi-spec';
-import { ZoomProvider } from '../../components/zoom/zoom';
-import { ZoomTransform } from '../../components/zoom/zoom-transform';
-import { useFilteredItems } from './gallery';
-import { Annotation } from '../../features/annotator/types';
-import { Annotations } from '../../features/annotator/annotations-canvas';
+import { API_BASE_URL } from '../../../api/client';
+import { SchemaMediaItem } from '../../../api/openapi-spec';
+import { ZoomProvider } from '../../../components/zoom/zoom';
+import { ZoomTransform } from '../../../components/zoom/zoom-transform';
+import { Annotation } from '../../../features/annotator/types';
+import { Annotations } from '../../../features/annotator/annotations-canvas';
+import { useFilteredItems } from '../use-filtered-items';
 
 export const ImageAnnotations = ({
     mediaItem,
@@ -23,7 +23,7 @@ export const ImageAnnotations = ({
     scale?: number;
 }) => {
     const size = { width: mediaItem.width, height: mediaItem.height };
-    const annotations: Array<Annotation> = mediaItem.predictions.annotations;
+    const annotations: Array<Annotation> = mediaItem.predictions?.annotations ?? [];
     const src = asThumbnail
         ? `${API_BASE_URL}/api/data-collection/${mediaItem.image}/image-thumbnail`
         : `${API_BASE_URL}/api/data-collection/${mediaItem.image}/image`;

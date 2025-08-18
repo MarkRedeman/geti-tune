@@ -5,10 +5,8 @@ import { redirect } from 'react-router';
 import { createBrowserRouter } from 'react-router-dom';
 import { path } from 'static-path';
 
-import { ZoomProvider } from './components/zoom/zoom';
 import { Layout } from './layout';
-import { DataCollection } from './routes/data-collection/data-collection';
-import { SelectedDataProvider } from './routes/data-collection/provider';
+import { DataCollection } from './routes/data-collection/data-collection.component';
 import { LiveFeed } from './routes/live-feed/live-feed';
 import { EditPipelineLayout } from './routes/pipeline/edit-pipeline-layout';
 import { Index as PipelineIndex } from './routes/pipeline/index';
