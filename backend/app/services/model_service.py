@@ -216,12 +216,14 @@ class ModelService:
 
         Returns: Model for inference or None if no model is active
         """
+        logger.info("get inference model")
         if force_reload:
             with self._model_activation_state_lock:
                 self._model_activation_state = self._load_state()
                 self._loaded_model = None
 
         if self._model_activation_state.active_model is None:
+            logger.info("No active model")
             return None
 
         if self._loaded_model is None or self._loaded_model.name != self._model_activation_state.active_model:

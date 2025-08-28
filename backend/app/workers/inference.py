@@ -74,10 +74,7 @@ def inference_routine(  # noqa: C901
                             logger.debug("Prediction queue is full, retrying...")
 
                 except queue.Empty:
-                    time.sleep(1)
                     continue
-
-                time.sleep(1)
                 continue
 
             # Install the callback if it's the first iteration with this model
