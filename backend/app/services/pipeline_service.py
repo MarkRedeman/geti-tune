@@ -38,6 +38,9 @@ class PipelineService:
     def _notify_sink_changed(self) -> None:
         self._active_pipeline_service.reload()
 
+    def _notify_model_changed(self) -> None:
+        self._active_pipeline_service.reload()
+
     def _notify_pipeline_changed(self) -> None:
         self._notify_source_changed()
         self._notify_sink_changed()
@@ -76,6 +79,8 @@ class PipelineService:
                     self._notify_source_changed()
                 if pipeline.sink_id != updated.sink_id:
                     self._notify_sink_changed()
+                if pipeline.model_id != updated.model_id:
+                    self._notify_model_changed()
             elif pipeline.status != updated.status:
                 # If the pipeline is being activated or stopped
                 self._notify_pipeline_changed()

@@ -206,6 +206,20 @@ class ModelService:
             if self._mp_model_reload_event:
                 self._mp_model_reload_event.set()
 
+    def deactivate_model(self, model_name: str) -> None:
+        """Activate a model for inference"""
+        logger.info(f"Deactivating model '{model_name}'")
+        with self._model_activation_state_lock:
+            # If there is no model available with the given name, raise an error
+            if model_name not in self._model_activation_state.available_models:
+                raise ResourceNotFoundError(ResourceType.MODEL, model_name, f"Model '{model_name}' not found")
+
+            # Activate the model
+            self._model_activation_state.active_model = None
+
+            if self._mp_model_reload_event:
+                self._mp_model_reload_event.set()
+
     def get_inference_model(self, force_reload: bool = False) -> Model | None:
         """
         Get the currently active model for inference.
@@ -216,14 +230,12 @@ class ModelService:
 
         Returns: Model for inference or None if no model is active
         """
-        logger.info("get inference model")
         if force_reload:
             with self._model_activation_state_lock:
                 self._model_activation_state = self._load_state()
                 self._loaded_model = None
 
         if self._model_activation_state.active_model is None:
-            logger.info("No active model")
             return None
 
         if self._loaded_model is None or self._loaded_model.name != self._model_activation_state.active_model:

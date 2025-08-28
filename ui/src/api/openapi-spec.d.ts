@@ -398,6 +398,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    '/api/models/{model_name}:deactivate': {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Deactivate Model
+         * @deprecated
+         * @description Deactivate a model
+         *
+         *     NOTE: this endpoint will be removed; use instead `PATCH /api/pipelines/{pipeline_id}` to change the active model
+         */
+        post: operations['deactivate_model_api_models__model_name__deactivate_post'];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     '/api/system/metrics/memory': {
         parameters: {
             query?: never;
@@ -2286,6 +2309,37 @@ export interface operations {
         };
     };
     activate_model_api_models__model_name__activate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Model'];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['HTTPValidationError'];
+                };
+            };
+        };
+    };
+    deactivate_model_api_models__model_name__deactivate_post: {
         parameters: {
             query?: never;
             header?: never;

@@ -146,3 +146,20 @@ async def activate_model(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
     return Model(name=model_name)
+
+# TODO remove this endpoint
+@router.post("/{model_name}:deactivate", deprecated=True)
+async def deactivate_model(
+        model_service: Annotated[ModelService, Depends(get_model_service)],
+        model_name: str) -> Model:
+    """
+    Deactivate a model
+
+    NOTE: this endpoint will be removed; use instead `PATCH /api/pipelines/{pipeline_id}` to change the active model
+    """
+    try:
+        model_service.deactivate_model(model_name)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    return Model(name=model_name)

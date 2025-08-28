@@ -53,9 +53,7 @@ class Pipeline(BaseIDNameModel):
 
     @model_validator(mode="after")
     def validate_running_status(self) -> "Pipeline":
-        if self.status == PipelineStatus.RUNNING and any(
-            x is None for x in (self.source_id, self.sink_id, self.model_id)
-        ):
+        if self.status == PipelineStatus.RUNNING and self.source_id is None:
             raise ValueError(
                 "Pipeline cannot be in 'running' status when source_id, sink_id, or model_id is not configured."
             )

@@ -1238,6 +1238,35 @@
                 }
             }
         },
+        "/api/models/{model_name}:deactivate": {
+            "post": {
+                "tags": ["Models"],
+                "summary": "Deactivate Model",
+                "description": "Deactivate a model\n\nNOTE: this endpoint will be removed; use instead `PATCH /api/pipelines/{pipeline_id}` to change the active model",
+                "operationId": "deactivate_model_api_models__model_name__deactivate_post",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "model_name",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "title": "Model Name" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Model" } } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } }
+                        }
+                    }
+                }
+            }
+        },
         "/api/system/metrics/memory": {
             "get": {
                 "summary": "Get Memory",

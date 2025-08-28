@@ -38,6 +38,8 @@ export const PipelineButtons = () => {
     const addPipeline = $api.useMutation('post', '/api/pipelines');
     const enablePipeline = $api.useMutation('post', '/api/pipelines/{pipeline_id}:enable');
     const updatePipeline = $api.useMutation('patch', '/api/pipelines/{pipeline_id}');
+    const activateModel = $api.useMutation('post', '/api/models/{model_name}:activate');
+    const deactivateModel = $api.useMutation('post', '/api/models/{model_name}:deactivate');
 
     console.log({
         sources: sources.data,
@@ -66,6 +68,11 @@ export const PipelineButtons = () => {
                             model_id: '86845a3c-5f98-4aa1-ada5-fd111fad2d36',
                         },
                     });
+                    await activateModel.mutateAsync({
+                        params: {
+                            path: { model_name: 'card-detection-ssd' },
+                        },
+                    });
                 }}
             >
                 Add model
@@ -84,6 +91,11 @@ export const PipelineButtons = () => {
                         },
                         body: {
                             model_id: null,
+                        },
+                    });
+                    await deactivateModel.mutateAsync({
+                        params: {
+                            path: { model_name: 'card-detection-ssd' },
                         },
                     });
                 }}
