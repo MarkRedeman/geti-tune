@@ -26,8 +26,7 @@ const Field = ({ field, value }: FieldProps) => {
     );
 };
 
-export const Index = () => {
-    // TODO: Replace this by /pipeline once available and maybe extract it to a hook
+export const PipelineButtons = () => {
     const sources = $api.useQuery('get', '/api/sources');
     const sinks = $api.useQuery('get', '/api/sinks');
     const models = $api.useQuery('get', '/api/models');
@@ -38,6 +37,7 @@ export const Index = () => {
 
     const addPipeline = $api.useMutation('post', '/api/pipelines');
     const enablePipeline = $api.useMutation('post', '/api/pipelines/{pipeline_id}:enable');
+    const updatePipeline = $api.useMutation('patch', '/api/pipelines/{pipeline_id}');
 
     console.log({
         sources: sources.data,
@@ -49,19 +49,47 @@ export const Index = () => {
     });
 
     return (
-        <View
-            backgroundColor={'gray-100'}
-            UNSAFE_style={{
-                backgroundImage: `url(${Background})`,
-                backgroundBlendMode: 'luminosity',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover',
-            }}
-            gridArea={'content'}
-            height='100%'
-            width='100%'
-        >
+        <>
+            <Button
+                onPress={async () => {
+                    const pipeline = pipelines.data?.find((p) => p.status === 'running');
+
+                    if (pipeline === null || pipeline === undefined) {
+                        return;
+                    }
+
+                    await updatePipeline.mutateAsync({
+                        params: {
+                            path: { pipeline_id: String(pipeline.id) },
+                        },
+                        body: {
+                            model_id: '86845a3c-5f98-4aa1-ada5-fd111fad2d36',
+                        },
+                    });
+                }}
+            >
+                Add model
+            </Button>
+            <Button
+                onPress={async () => {
+                    const pipeline = pipelines.data?.find((p) => p.status === 'running');
+
+                    if (pipeline === null || pipeline === undefined) {
+                        return;
+                    }
+
+                    await updatePipeline.mutateAsync({
+                        params: {
+                            path: { pipeline_id: String(pipeline.id) },
+                        },
+                        body: {
+                            model_id: null,
+                        },
+                    });
+                }}
+            >
+                Remove model
+            </Button>
             <Button
                 onPress={async () => {
                     const pipeline = await addPipeline.mutateAsync({
@@ -87,6 +115,48 @@ export const Index = () => {
             >
                 Submit pipeline
             </Button>
+        </>
+    );
+};
+
+export const Index = () => {
+    // TODO: Replace this by /pipeline once available and maybe extract it to a hook
+    const sources = $api.useQuery('get', '/api/sources');
+    const sinks = $api.useQuery('get', '/api/sinks');
+    const models = $api.useQuery('get', '/api/models');
+
+    const pipelines = $api.useQuery('get', '/api/pipelines');
+    const memory = $api.useQuery('get', '/api/system/metrics/memory');
+    const health = $api.useQuery('get', '/health');
+
+    const addPipeline = $api.useMutation('post', '/api/pipelines');
+    const enablePipeline = $api.useMutation('post', '/api/pipelines/{pipeline_id}:enable');
+    const updatePipeline = $api.useMutation('patch', '/api/pipelines/{pipeline_id}');
+
+    console.log({
+        sources: sources.data,
+        models: models.data,
+        sinks: sinks.data,
+        pipelines: pipelines.data,
+        memory: memory.data,
+        health: health.data,
+    });
+
+    return (
+        <View
+            backgroundColor={'gray-100'}
+            UNSAFE_style={{
+                backgroundImage: `url(${Background})`,
+                backgroundBlendMode: 'luminosity',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover',
+            }}
+            gridArea={'content'}
+            height='100%'
+            width='100%'
+        >
+            <PipelineButtons />
             <View maxWidth={'1048px'} marginX='auto' paddingY='size-800'>
                 <View>
                     <Flex direction='column' gap='size-400'>

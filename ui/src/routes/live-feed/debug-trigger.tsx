@@ -5,6 +5,7 @@ import { ActionButton, Button, Divider, Flex, Item, Picker } from '@geti/ui';
 
 import { $api } from '../../api/client';
 import { useWebRTCConnection } from '../../components/stream/web-rtc-connection-provider';
+import { PipelineButtons } from '../pipeline';
 
 const DebugTooltip = () => {
     const modelsQuery = $api.useSuspenseQuery('get', '/api/models');
@@ -94,6 +95,7 @@ const DebugTooltip = () => {
 export const DebugTrigger = () => {
     return (
         <Suspense fallback={'Loading'}>
+            <PipelineButtons />
             <DialogTrigger type='popover'>
                 <ActionButton marginStart={'auto'}>Debug</ActionButton>
                 <Dialog>
