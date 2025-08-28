@@ -36,6 +36,9 @@ export const Index = () => {
     const memory = $api.useQuery('get', '/api/system/metrics/memory');
     const health = $api.useQuery('get', '/health');
 
+    const addPipeline = $api.useMutation('post', '/api/pipelines');
+    const enablePipeline = $api.useMutation('post', '/api/pipelines/{pipeline_id}:enable');
+
     console.log({
         sources: sources.data,
         models: models.data,
@@ -59,6 +62,31 @@ export const Index = () => {
             height='100%'
             width='100%'
         >
+            <Button
+                onPress={async () => {
+                    const pipeline = await addPipeline.mutateAsync({
+                        body: {
+                            id: 'b2cd6575-c278-43ef-a49d-3fed7659871e',
+                            name: 'Card detection',
+                            status: 'idle',
+                            model_id: '86845a3c-5f98-4aa1-ada5-fd111fad2d36',
+                            sink_id: '3262eb47-1915-4e3a-8d7b-da60c1d24d7a',
+                            //source_id: 'be5c5bb7-9fe6-4b0f-a2e8-29cc575c0202',
+                            source_id: 'a0bab648-d4c9-442b-b517-5c23d346e699',
+                        },
+                    });
+
+                    if (pipeline.id) {
+                        enablePipeline.mutateAsync({
+                            params: {
+                                path: { pipeline_id: pipeline.id },
+                            },
+                        });
+                    }
+                }}
+            >
+                Submit pipeline
+            </Button>
             <View maxWidth={'1048px'} marginX='auto' paddingY='size-800'>
                 <View>
                     <Flex direction='column' gap='size-400'>
