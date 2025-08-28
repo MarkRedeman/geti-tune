@@ -4,12 +4,12 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.openapi.models import Example
 
 from app.api.dependencies import get_model_id, get_model_service
 from app.schemas import Model
-from app.services import ModelService, ResourceInUseError, ResourceNotFoundError
+from app.services import ModelAlreadyExistsError, ModelService, ResourceInUseError, ResourceNotFoundError
 
 router = APIRouter(prefix="/api/models", tags=["Models"])
 
@@ -23,6 +23,34 @@ UPDATE_MODEL_BODY_EXAMPLES = {
         },
     )
 }
+
+
+@router.post("", status_code=status.HTTP_201_CREATED)
+async def add_model(
+    model_service: Annotated[ModelService, Depends(get_model_service)],
+    model_name: Annotated[str, Query(description="Name for the model files")],
+    xml_file: Annotated[UploadFile, File()],
+    bin_file: Annotated[UploadFile, File()],
+) -> Model:
+    """
+    Upload a new model
+
+    NOTE: this endpoint will be replaced by preconfigured model selection
+    """
+    # Validate file extensions
+    if not xml_file.filename or not xml_file.filename.endswith(".xml"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="The model XML file must have .xml extension"
+        )
+    if not bin_file.filename or not bin_file.filename.endswith(".bin"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="The model BIN file must have .bin extension"
+        )
+
+    try:
+        return await model_service.add_model(model_name, xml_file, bin_file)
+    except ModelAlreadyExistsError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 @router.get(
@@ -100,3 +128,21 @@ async def delete_model(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ResourceInUseError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+# TODO remove this endpoint
+@router.post("/{model_name}:activate", deprecated=True)
+async def activate_model(
+        model_service: Annotated[ModelService, Depends(get_model_service)],
+        model_name: str) -> Model:
+    """
+    Activate a model
+
+    NOTE: this endpoint will be removed; use instead `PATCH /api/pipelines/{pipeline_id}` to change the active model
+    """
+    try:
+        model_service.activate_model(model_name)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    return Model(name=model_name)
