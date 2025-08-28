@@ -57,6 +57,26 @@ def inference_routine(  # noqa: C901
 
             if model is None:
                 logger.debug("No model available... retrying in 1 second")
+
+                try:
+                    queue_data = frame_queue.get(timeout=1)
+                    inference_data = InferenceData(
+                        prediction=None,
+                        visualized_prediction=queue_data.frame_data,
+                        model_name="None",
+                    )
+                    queue_data.inference_data = inference_data
+                    while not stop_event.is_set():
+                        try:
+                            pred_queue.put(queue_data, timeout=1)
+                            break
+                        except queue.Full:
+                            logger.debug("Prediction queue is full, retrying...")
+
+                except queue.Empty:
+                    time.sleep(1)
+                    continue
+
                 time.sleep(1)
                 continue
 
