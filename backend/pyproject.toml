@@ -43,9 +43,6 @@ lint = [
     "types-requests~=2.32.4",
 ]
 
-[tool.uv]
-default-groups = "all"
-
 [tool.uv.build-backend]
 module-root = ""
 module-name = "app"
