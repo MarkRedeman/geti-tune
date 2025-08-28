@@ -1,6 +1,3 @@
-// Copyright (C) 2025 Intel Corporation
-// SPDX-License-Identifier: Apache-2.0
-
 import { defineConfig, devices } from '@playwright/test';
 
 const CI = !!process.env.CI;

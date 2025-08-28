@@ -23,6 +23,3 @@ packages/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-
-src/api/openapi-spec.d.ts
-src/api/openapi-spec.json

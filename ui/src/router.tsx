@@ -1,6 +1,3 @@
-// Copyright (C) 2025 Intel Corporation
-// SPDX-License-Identifier: Apache-2.0
-
 import { Suspense } from 'react';
 
 import { Loading } from '@geti/ui';
@@ -8,52 +5,37 @@ import { redirect } from 'react-router';
 import { createBrowserRouter } from 'react-router-dom';
 import { path } from 'static-path';
 
-import { ZoomProvider } from './components/zoom/zoom';
-import { WebRTCConnectionProvider } from './features/inference/stream/web-rtc-connection-provider';
-import { ProjectDetails } from './features/project/project-details.component';
 import { Layout } from './layout';
-import { Dataset } from './routes/dataset/dataset.component';
-import { SelectedDataProvider } from './routes/dataset/provider';
-import { ErrorPage } from './routes/error-page/error-page';
-import { Inference } from './routes/inference/inference';
-import { Labels } from './routes/labels/labels';
-import { Models } from './routes/models/models';
-import { CreateProject } from './routes/project/create-project';
-import { EditProject } from './routes/project/edit-project';
+import { DataCollection } from './routes/data-collection/data-collection.component';
+import { LiveFeed } from './routes/live-feed/live-feed';
+import { EditPipelineLayout } from './routes/pipeline/edit-pipeline-layout';
+import { Index as PipelineIndex } from './routes/pipeline/index';
+import { Model as PipelineModel } from './routes/pipeline/model';
+import { Sink as PipelineSink } from './routes/pipeline/sink';
+import { Source as PipelineSource } from './routes/pipeline/source';
 
 const root = path('/');
-const project = root.path('/project');
-const inference = root.path('/inference');
-const dataset = root.path('/dataset');
-const models = root.path('/models');
-const labels = root.path('/labels');
+const pipeline = root.path('/pipeline');
+const liveFeed = root.path('/live-feed');
+const dataCollection = root.path('/data-collection');
 
 export const paths = {
     root,
-    project: {
-        index: project,
-        new: project.path('/new'),
-        edit: project.path('/edit/:projectId'),
+    pipeline: {
+        index: pipeline,
+        source: pipeline.path('/source'),
+        model: pipeline.path('/model'),
+        sink: pipeline.path('/sink'),
     },
-    inference: {
-        index: inference,
+    liveFeed: {
+        index: liveFeed,
     },
-    dataset: {
-        index: dataset,
-    },
-    models: {
-        index: models,
-    },
-    labels: {
-        index: labels,
+    dataCollection: {
+        index: dataCollection,
     },
 };
 
 export const router = createBrowserRouter([
-    {
-        path: paths.project.new.pattern,
-        element: <CreateProject />,
-    },
     {
         path: paths.root.pattern,
         element: (
@@ -61,55 +43,51 @@ export const router = createBrowserRouter([
                 <Layout />
             </Suspense>
         ),
-        errorElement: <ErrorPage />,
+        errorElement: <div>Oh no</div>,
         children: [
             {
                 index: true,
                 loader: () => {
-                    // TODO: If there is no project configured then redirect to new project creation
-                    // else redirect to inference
-                    return redirect(paths.project.new({}));
+                    // TODO: if no pipeline configured then redirect to source
+                    // else redirect to live-feed
+                    return redirect('/pipeline/source');
                 },
             },
             {
-                path: paths.project.index.pattern,
+                path: paths.pipeline.index.pattern,
                 children: [
                     {
                         index: true,
-                        path: paths.project.index.pattern,
-                        element: <ProjectDetails />,
+                        path: paths.pipeline.index.pattern,
+                        element: <PipelineIndex />,
                     },
                     {
-                        path: paths.project.edit.pattern,
-                        element: <EditProject />,
+                        element: <EditPipelineLayout />,
+                        children: [
+                            {
+                                path: paths.pipeline.source.pattern,
+                                element: <PipelineSource />,
+                            },
+
+                            {
+                                path: paths.pipeline.model.pattern,
+                                element: <PipelineModel />,
+                            },
+                            {
+                                path: paths.pipeline.sink.pattern,
+                                element: <PipelineSink />,
+                            },
+                        ],
                     },
                 ],
             },
             {
-                path: paths.inference.index.pattern,
-                element: (
-                    <WebRTCConnectionProvider>
-                        <Inference />
-                    </WebRTCConnectionProvider>
-                ),
+                path: paths.liveFeed.index.pattern,
+                element: <LiveFeed />,
             },
             {
-                path: paths.dataset.index.pattern,
-                element: (
-                    <ZoomProvider>
-                        <SelectedDataProvider>
-                            <Dataset />
-                        </SelectedDataProvider>
-                    </ZoomProvider>
-                ),
-            },
-            {
-                path: paths.models.index.pattern,
-                element: <Models />,
-            },
-            {
-                path: paths.labels.index.pattern,
-                element: <Labels />,
+                path: paths.dataCollection.index.pattern,
+                element: <DataCollection />,
             },
         ],
     },

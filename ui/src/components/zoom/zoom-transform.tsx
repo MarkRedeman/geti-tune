@@ -1,7 +1,6 @@
-// Copyright (C) 2025 Intel Corporation
-// SPDX-License-Identifier: Apache-2.0
-
 import { ReactNode, useEffect, useMemo, useRef } from 'react';
+
+import { initial } from 'lodash-es';
 
 import { useContainerSize } from './use-container-size';
 import { useSetZoom, useZoom } from './zoom';
@@ -11,9 +10,9 @@ import classes from './zoom.module.scss';
 type Size = { width: number; height: number };
 
 const DEFAULT_SCREEN_ZOOM = 0.9;
-const getCenterCoordinates = (container: Size, target: Size) => {
+const getCenterCoordinates = (container: Size, target: Size, initialScale = DEFAULT_SCREEN_ZOOM) => {
     // Scale image so that it fits perfectly in the container
-    const scale = DEFAULT_SCREEN_ZOOM * Math.min(container.width / target.width, container.height / target.height);
+    const scale = initialScale * Math.min(container.width / target.width, container.height / target.height);
 
     return {
         scale,
@@ -28,13 +27,14 @@ const getCenterCoordinates = (container: Size, target: Size) => {
 const INITIAL_ZOOM = { scale: 1.0, translate: { x: 0, y: 0 } };
 const SyncZoom = ({ container, target }: { container: Size; target: Size }) => {
     const setZoom = useSetZoom();
+    const { initialScale } = useZoom();
 
     const targetZoom = useMemo(() => {
         if (container.width === undefined || container.height === undefined) {
             return INITIAL_ZOOM;
         }
 
-        return getCenterCoordinates({ width: container.width, height: container.height }, target);
+        return getCenterCoordinates({ width: container.width, height: container.height }, target, initialScale);
     }, [container, target]);
 
     useEffect(() => {

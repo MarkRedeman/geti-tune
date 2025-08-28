@@ -1,6 +1,3 @@
-// Copyright (C) 2025 Intel Corporation
-// SPDX-License-Identifier: Apache-2.0
-
 import { ReactNode } from 'react';
 
 import { Disclosure, DisclosurePanel, DisclosureTitle, Flex, Radio, RadioGroup, View } from '@geti/ui';
@@ -32,7 +29,7 @@ export const RadioDisclosure = <ValueType extends string>({
             aria-label={ariaLabel}
             value={value}
         >
-            <Flex direction='column' gap='size-200'>
+            <Flex direction='column' gap='size-200' minWidth={'size-6000'}>
                 {items.map((item) => {
                     return (
                         <Disclosure
@@ -42,7 +39,7 @@ export const RadioDisclosure = <ValueType extends string>({
                             UNSAFE_className={classes.disclosure}
                         >
                             <DisclosureTitle UNSAFE_className={classes.disclosureTitle}>
-                                <View>
+                                <View padding='size-200'>
                                     <Radio value={item.value} UNSAFE_className={classes.radio}>
                                         <Flex alignItems='center' gap='size-200'>
                                             {item.label}
@@ -51,7 +48,7 @@ export const RadioDisclosure = <ValueType extends string>({
                                 </View>
                             </DisclosureTitle>
                             <DisclosurePanel UNSAFE_className={classes.disclosurePanel}>
-                                <View>{item.content}</View>
+                                <View padding='size-200'>{item.content}</View>
                             </DisclosurePanel>
                         </Disclosure>
                     );

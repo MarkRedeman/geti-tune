@@ -1,6 +1,3 @@
-// Copyright (C) 2025 Intel Corporation
-// SPDX-License-Identifier: Apache-2.0
-
 import { createNetworkFixture, NetworkFixture } from '@msw/playwright';
 import { expect, test as testBase } from '@playwright/test';
 
@@ -21,10 +18,8 @@ const test = testBase.extend<Fixtures>({
                 return response(200).json([]);
             }),
             http.post('/api/webrtc/offer', ({ response }) => {
-                return response(200).json({
-                    type: 'answer',
-                    sdp: 'v=0\r\no=- 0 0 IN IP4 127.0.0.1\r\n',
-                } as never);
+                // Schema is empty, so we return an empty object
+                return response(200).json({} as never);
             }),
             http.post('/api/input_hook', ({ response }) => {
                 // Schema is empty, so we return an empty object

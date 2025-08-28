@@ -1,5 +1,5 @@
-// Copyright (C) 2025 Intel Corporation
-// SPDX-License-Identifier: Apache-2.0
+// Copyright (C) 2022-2025 Intel Corporation
+// LIMITED EDGE SOFTWARE DISTRIBUTION LICENSE
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,11 +42,7 @@ export default [
                     ],
                 },
             ],
-            'header/header': [
-                'warn',
-                'line',
-                [' Copyright (C) 2025 Intel Corporation', ' SPDX-License-Identifier: Apache-2.0'],
-            ],
+            'header/header': 'off',
         },
     },
     ...compat.extends('plugin:playwright/playwright-test').map((config) => ({

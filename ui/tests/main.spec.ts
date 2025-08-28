@@ -1,11 +1,8 @@
-// Copyright (C) 2025 Intel Corporation
-// SPDX-License-Identifier: Apache-2.0
-
 import { expect, test } from './fixtures';
 
-test.describe('Inference', () => {
+test.describe('livefeed', () => {
     test('starts stream', async ({ page }) => {
-        await page.goto('/inference');
+        await page.goto('/live-feed');
 
         await expect(page.getByLabel('Idle')).toBeVisible();
 
