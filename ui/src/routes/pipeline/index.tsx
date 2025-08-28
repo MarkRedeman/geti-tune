@@ -32,6 +32,19 @@ export const Index = () => {
     const sinks = $api.useQuery('get', '/api/sinks');
     const models = $api.useQuery('get', '/api/models');
 
+    const pipelines = $api.useQuery('get', '/api/pipelines');
+    const memory = $api.useQuery('get', '/api/system/metrics/memory');
+    const health = $api.useQuery('get', '/health');
+
+    console.log({
+        sources: sources.data,
+        models: models.data,
+        sinks: sinks.data,
+        pipelines: pipelines.data,
+        memory: memory.data,
+        health: health.data,
+    });
+
     return (
         <View
             backgroundColor={'gray-100'}
