@@ -1,6 +1,7 @@
 # Copyright (C) 2025 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
+from uuid import uuid4
 import asyncio
 import logging
 import os
@@ -48,7 +49,7 @@ class ModelService:
         self.models_dir = Path("data/models")
         self._mp_model_reload_event = mp_model_reload_event
 
-        self._persistence: GenericPersistenceService[Model, ModelRepository] = GenericPersistenceService(
+        self._persistence: GenericPersistenceService[ModelDb, ModelRepository] = GenericPersistenceService(
             ServiceConfig(ModelRepository, ModelMapper, ResourceType.MODEL)
         )
         self._model_activation_state: ModelActivationState = self._load_state()
@@ -116,16 +117,24 @@ class ModelService:
             if is_first_model:
                 self._model_activation_state.active_model = model_name
 
-            # Store the model in db
-            model = ModelDB(name=model_name, format=ModelFormat.OPENVINO)
+
+            model = ModelDB(
+                id=str(uuid4()),
+                name=model_name,
+                format=ModelFormat.OPENVINO)
             with get_db_session() as db:
                 repo = ModelRepository(db)
                 repo.save(model)
-                if is_first_model:
-                    repo.set_active_model(model_name)
+                # if is_first_model:
+                #     repo.set_active_model(model_name)
                 db.commit()
+            model = ModelDB(
+                id=str(uuid4()),
+                name=model_name,
+                format=ModelFormat.OPENVINO)
             if is_first_model and self._mp_model_reload_event:
                 self._mp_model_reload_event.set()
+
             return ModelMapper.to_schema(model)
 
     def remove_model(self, model_name: str) -> None:
